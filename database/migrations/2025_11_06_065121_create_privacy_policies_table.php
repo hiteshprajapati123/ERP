@@ -1,0 +1,33 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('privacy_policies', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->string('subtitle');
+            $table->text('introduction');
+            $table->json('sections');
+            $table->string('last_updated');
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('privacy_policies');
+    }
+};

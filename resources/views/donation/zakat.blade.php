@@ -1,0 +1,248 @@
+@extends('layouts.app')
+
+@section('content')
+@if(isset($zakat) && $zakat->is_active)
+<div class="zakat-page">
+    <!-- Hero Section -->
+    <section class="zakat-hero bg-gradient-primary text-white text-center py-5" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="hero-content">
+                        <i class="fas fa-hand-holding-usd display-3 mb-4"></i>
+                        <h1 class="display-5 fw-bold mb-3">{{ $zakat->hero_title }}</h1>
+                        <p class="lead">{{ $zakat->hero_quote }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- What is Zakat Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <img src="{{ $zakat->what_is_image ? asset('storage/' . $zakat->what_is_image) : 'https://img.freepik.com/free-vector/islamic-donation-concept-illustration_114360-1450.jpg' }}" alt="{{ $zakat->what_is_title }}" class="img-fluid rounded-3 shadow">
+                </div>
+                <div class="col-lg-6">
+                    <div class="ps-lg-5">
+                        <h2 class="fw-bold mb-4">{{ $zakat->what_is_title }}</h2>
+                        <p class="lead text-muted">{{ $zakat->what_is_content }}</p>
+                        
+                        @if(!empty($zakat->decoded_key_points))
+                        <div class="mt-4">
+                            @foreach($zakat->decoded_key_points as $point)
+                            <div class="d-flex mb-3">
+                                <div class="me-3">
+                                    <div class="icon-box bg-primary bg-opacity-10 text-primary rounded-circle p-3">
+                                        <i class="fas fa-{{ $point['icon'] ?? 'info-circle' }}"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h5 class="fw-bold mb-1">{{ $point['title'] ?? '' }}</h5>
+                                    <p class="text-muted mb-0">{{ $point['description'] ?? '' }}</p>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Donation Section -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h2 class="fw-bold mb-4">{{ $zakat->donation_title }}</h2>
+                    <p class="lead text-muted mb-5">{{ $zakat->donation_description }}</p>
+                    
+                    <div class="donation-card p-4 p-lg-5 bg-white rounded-3 shadow-sm">
+                        <div class="qr-section my-5">
+                            <div class="qr-container p-3 bg-white d-inline-block rounded-3 shadow-sm">
+                                <img src="{{ $zakat->qr_code_image ? asset('storage/' . $zakat->qr_code_image) : asset('img/qr-code-placeholder.png') }}" alt="Payment QR Code" class="img-fluid" style="max-width: 200px;">
+                            </div>
+                            <p class="text-muted mt-3">Scan to pay your Zakat via UPI</p>
+                        </div>
+
+                        <div class="donation-actions">
+                            <button class="btn btn-primary btn-lg px-5 py-3" id="confirmZakat">
+                                <i class="fas fa-check-circle me-2"></i> I have paid my Zakat
+                            </button>
+                            <p class="text-muted small mt-3">{{ $zakat->donation_note }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+    :root {
+        --primary-color: #9b59b6;
+        --primary-rgb: 155, 89, 182;
+    }
+    
+    .zakat-page {
+        background-color: #f8f9fa;
+    }
+    
+    .zakat-hero {
+        background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .zakat-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+        opacity: 0.5;
+    }
+    
+    .icon-box {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+    
+    .donation-card {
+        border: 1px solid rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .donation-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+    }
+    
+    .calculator {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px solid #eee;
+    }
+    
+    .btn-outline-primary {
+        color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    .btn-outline-primary:hover, 
+    .btn-outline-primary:active,
+    .btn-outline-primary:focus {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+    }
+    
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    .btn-primary:hover,
+    .btn-primary:active,
+    .btn-primary:focus {
+        background-color: #8e44ad;
+        border-color: #8e44ad;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(155, 89, 182, 0.3);
+    }
+    
+    .accordion-button:not(.collapsed) {
+        background-color: rgba(155, 89, 182, 0.05);
+        color: var(--primary-color);
+    }
+    
+    .accordion-button:focus {
+        border-color: rgba(155, 89, 182, 0.25);
+        box-shadow: 0 0 0 0.25rem rgba(155, 89, 182, 0.25);
+    }
+    
+    @media (max-width: 768px) {
+        .zakat-hero {
+            padding: 3rem 0;
+        }
+        
+        .hero-content h1 {
+            font-size: 2.2rem;
+        }
+    }
+
+    main {
+        margin-top: 90px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Zakat Calculator
+        const calculateBtn = document.getElementById('calculateZakat');
+        const wealthInput = document.getElementById('wealth');
+        const debtsInput = document.getElementById('debts');
+        const zakatResult = document.getElementById('zakatResult');
+        const zakatAmount = document.getElementById('zakatAmount');
+        
+        if (calculateBtn) {
+            calculateBtn.addEventListener('click', function() {
+                const wealth = parseFloat(wealthInput.value) || 0;
+                const debts = parseFloat(debtsInput.value) || 0;
+                const zakat = (wealth - debts) * 0.025; // 2.5% of net wealth
+                
+                if (zakat > 0) {
+                    zakatAmount.textContent = zakat.toFixed(2);
+                    zakatResult.classList.remove('d-none');
+                } else {
+                    zakatResult.classList.add('d-none');
+                    alert('Your net wealth is below the Nisab threshold or you have no Zakat to pay.');
+                }
+            });
+        }
+        
+        // Set Nisab values from PHP to JavaScript
+        const nisabGold = {{ $zakat->nisab_gold ?? 87.48 }};
+        const nisabSilver = {{ $zakat->nisab_silver ?? 612.36 }};
+
+        // Zakat payment confirmation
+        const confirmZakat = document.getElementById('confirmZakat');
+        if (confirmZakat) {
+            confirmZakat.addEventListener('click', function() {
+                // Show success message
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
+                alert.style.zIndex = '9999';
+                alert.style.minWidth = '300px';
+                alert.role = 'alert';
+                alert.innerHTML = `
+                    <i class="fas fa-check-circle me-2"></i>
+                    Thank you for fulfilling your Zakat obligation. May Allah accept it from you.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                document.body.appendChild(alert);
+                
+                // Remove alert after 5 seconds
+                setTimeout(() => {
+                    alert.classList.remove('show');
+                    setTimeout(() => {
+                        alert.remove();
+                    }, 300);
+                }, 5000);
+            });
+        }
+    });
+</script>
+@endif
+@endsection
