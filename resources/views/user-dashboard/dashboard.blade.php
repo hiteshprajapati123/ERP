@@ -133,39 +133,550 @@
         </div>
     </div>
 
-    <!-- Recent Activity -->
-    <div class="card border-0 shadow-sm">
-        <div class="card-body p-0">
-            <div class="d-flex justify-content-between align-items-center p-4 border-bottom">
-                <div>
-                    <h5 class="mb-0 fw-bold">Recent Activity</h5>
-                    <p class="text-muted small mb-0">Your latest actions and updates</p>
-                </div>
-                <button id="refresh-activities" class="btn btn-sm btn-light rounded-circle" title="Refresh">
-                    <i class="fas fa-sync-alt"></i>
-                </button>
-            </div>
-            
-            <div id="activities-container" class="activity-feed">
-                <!-- Activities will be loaded here via AJAX -->
-                <div class="text-center py-4">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
+    <!-- Quick Actions Widget -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h5 class="card-title fw-bold mb-4 d-flex align-items-center">
+                        <i class="fas fa-bolt text-warning me-2"></i>
+                        Quick Actions
+                    </h5>
+                    <div class="quick-actions-list">
+                        <!-- Action 1 -->
+                        <a href="{{ route('user.profile') }}" class="quick-action-item">
+                            <div class="quick-action-icon bg-primary bg-opacity-10">
+                                <i class="fas fa-user-edit text-primary"></i>
+                            </div>
+                            <div class="quick-action-content">
+                                <h6 class="mb-0">Update Profile</h6>
+                                <p class="text-muted mb-0 small">Edit your personal details</p>
+                            </div>
+                            <div class="quick-action-arrow">
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </a>
+                        
+                        <!-- Action 2 -->
+                        <a href="{{ route('user.notices.index') }}" class="quick-action-item">
+                            <div class="quick-action-icon bg-success bg-opacity-10">
+                                <i class="fas fa-file-alt text-success"></i>
+                            </div>
+                            <div class="quick-action-content">
+                                <h6 class="mb-0">My Notices</h6>
+                                <p class="text-muted mb-0 small">View and download notices</p>
+                            </div>
+                            <div class="quick-action-arrow">
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </a>
+                        
+                        <!-- Action 3 -->
+                        <a href="{{ route('user.fees') }}" class="quick-action-item">
+                            <div class="quick-action-icon bg-info bg-opacity-10">
+                                <i class="fas fa-credit-card text-info"></i>
+                            </div>
+                            <div class="quick-action-content">
+                                <h6 class="mb-0">Fee Details</h6>
+                                <p class="text-muted mb-0 small">View and pay fees</p>
+                            </div>
+                            <div class="quick-action-arrow">
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </a>
+                        
+                        <!-- Action 4 -->
+                        <a href="#" class="quick-action-item" data-bs-toggle="modal" data-bs-target="#contactModal">
+                            <div class="quick-action-icon bg-purple bg-opacity-10">
+                                <i class="fas fa-headset text-purple"></i>
+                            </div>
+                            <div class="quick-action-content">
+                                <h6 class="mb-0">Contact Us</h6>
+                                <p class="text-muted mb-0 small">Get in touch with us</p>
+                            </div>
+                            <div class="quick-action-arrow">
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </a>
                     </div>
-                    <p class="mt-2 text-muted">Loading activities...</p>
                 </div>
             </div>
-            
-            <div class="text-center p-3 bg-light">
-                <a href="#" id="load-more-activities" class="text-primary text-decoration-none small fw-medium" data-page="1">
-                    <i class="fas fa-arrow-down me-1"></i> Load More Activities
-                </a>
+        </div>
+    </div>
+
+    <!-- Contact Us Modal -->
+    <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border: none;">
+                <div class="modal-header" style="background: linear-gradient(rgba(26, 93, 59, 0.9), rgba(26, 93, 59, 0.8)); color: white; border: none; padding: 1.25rem 1.5rem;">
+                    <h5 class="modal-title m-0" id="contactModalLabel" style="font-size: 1.25rem; font-weight: 600;">Get In Touch</h5>
+                    <button type="button" class="btn-close btn-close-white m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="contact-form">
+                                <h2 style="font-size: 1.25rem; color: #1A5D3B; margin: 0 0 1.25rem; position: relative; padding-bottom: 0.75rem; text-align: center;">
+                                    Send Us a Message
+                                    <span style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 40px; height: 2px; background: #D4AF37;"></span>
+                                </h2>
+                                
+                                @if(session('status'))
+                                    <div class="alert alert-{{ session('status') }} mb-3">
+                                        {{ session('message') }}
+                                    </div>
+                                @endif
+
+                                <form id="contactForm" action="{{ route('contact.submit') }}" method="POST" class="mt-3" onsubmit="event.preventDefault(); submitContactForm(this);">
+                                    @csrf
+                                    <div class="mb-3">
+                                        <label class="form-label fw-medium text-dark">Your Name</label>
+                                        <input type="text" name="name" value="{{ old('name') }}" required 
+                                            class="form-control @error('name') is-invalid @enderror" 
+                                            style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; transition: border-color 0.2s;">
+                                        @error('name')
+                                            <p class="text-danger text-sm mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label fw-medium text-dark">Email Address</label>
+                                        <input type="email" name="email" value="{{ old('email') }}" required 
+                                            class="form-control @error('email') is-invalid @enderror"
+                                            style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; transition: border-color 0.2s;">
+                                        @error('email')
+                                            <p class="text-danger text-sm mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label fw-medium text-dark">Subject</label>
+                                        <input type="text" name="subject" value="{{ old('subject') }}" required 
+                                            class="form-control @error('subject') is-invalid @enderror"
+                                            style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; transition: border-color 0.2s;">
+                                        @error('subject')
+                                            <p class="text-danger text-sm mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label class="form-label fw-medium text-dark">Your Message</label>
+                                        <textarea name="message" rows="4" required 
+                                            class="form-control @error('message') is-invalid @enderror"
+                                            style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; transition: border-color 0.2s;">{{ old('message') }}</textarea>
+                                        @error('message')
+                                            <p class="text-danger text-sm mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">
+                                            <i class="fas fa-times me-1"></i> Close
+                                        </button>
+                                        <button type="submit" class="btn btn-primary btn-sm" style="background-color: #1A5D3B; border: none;" id="submitBtn">
+                                            <i class="fas fa-paper-plane me-1"></i> Send Message
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Toast Notification (Moved outside modal) -->
+                                    
+                                    @push('scripts')
+                                    <script>
+                                        function submitContactForm(form) {
+                                            const submitBtn = form.querySelector('button[type="submit"]');
+                                            const originalBtnText = submitBtn.innerHTML;
+                                            
+                                            submitBtn.disabled = true;
+                                            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Sending...';
+                                            
+                                            const formData = new FormData(form);
+                                            const toastEl = document.getElementById('successToast');
+                                            const toastMessage = document.getElementById('toastMessage');
+                                            const toast = new bootstrap.Toast(toastEl);
+                                            
+                                            fetch(form.action, {
+                                                method: 'POST',
+                                                headers: {
+                                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                                    'X-Requested-With': 'XMLHttpRequest',
+                                                    'Accept': 'application/json'
+                                                },
+                                                body: formData
+                                            })
+                                            .then(async response => {
+                                                const data = await response.json();
+                                                if (!response.ok) {
+                                                    throw data;
+                                                }
+                                                return data;
+                                            })
+                                            .then(data => {
+                                                if (data.success) {
+                                                    form.reset();
+                                                    const modal = bootstrap.Modal.getInstance(document.getElementById('contactModal'));
+                                                    modal.hide();
+                                                    showToast('success', data.message || 'Your message has been sent successfully!');
+                                                } else {
+                                                    throw new Error(data.message || 'There was an error sending your message.');
+                                                }
+                                            })
+                                            .catch(error => {
+                                                console.error('Error:', error);
+                                                const errorMessage = error.message || 
+                                                                  (error.errors ? Object.values(error.errors).flat().join(' ') : null) || 
+                                                                  'An error occurred. Please try again.';
+                                                showToast('error', errorMessage);
+                                            })
+                                            .finally(() => {
+                                                submitBtn.disabled = false;
+                                                submitBtn.innerHTML = originalBtnText;
+                                            });
+                                        }
+                                        
+                                        function showToast(type, message) {
+                                            const toastEl = document.getElementById('successToast');
+                                            const toastMessage = document.getElementById('toastMessage');
+                                            const toast = new bootstrap.Toast(toastEl, { autohide: true, delay: 5000 });
+                                            
+                                            // Set message
+                                            toastMessage.textContent = message;
+                                            
+                                            // Update toast style based on type
+                                            if (type === 'success') {
+                                                toastEl.classList.remove('bg-danger');
+                                                toastEl.classList.add('bg-success');
+                                            } else {
+                                                toastEl.classList.remove('bg-success');
+                                                toastEl.classList.add('bg-danger');
+                                            }
+                                            
+                                            // Show toast
+                                            toast.show();
+                                        }
+                                        
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            const form = document.getElementById('contactForm');
+                                            const modal = document.getElementById('contactModal');
+                                            
+                                            // Reset form when modal is closed
+                                            modal.addEventListener('hidden.bs.modal', function () {
+                                                form.reset();
+                                                
+                                                // Reset any error states
+                                                const errorElements = form.querySelectorAll('.is-invalid');
+                                                errorElements.forEach(el => {
+                                                    el.classList.remove('is-invalid');
+                                                });
+                                            });
+                                            
+                                            // Clear validation errors when input changes
+                                            form.querySelectorAll('input, textarea').forEach(input => {
+                                                input.addEventListener('input', function() {
+                                                    if (this.classList.contains('is-invalid')) {
+                                                        this.classList.remove('is-invalid');
+                                                        const errorElement = this.nextElementSibling;
+                                                        if (errorElement && errorElement.classList.contains('text-danger')) {
+                                                            errorElement.remove();
+                                                        }
+                                                    }
+                                                });
+                                            });
+                                        });
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            const form = document.getElementById('contactForm');
+                                            const submitBtn = document.getElementById('submitBtn');
+                                            const modal = document.getElementById('contactModal');
+                                            const toastEl = document.getElementById('successToast');
+                                            const toastMessage = document.getElementById('toastMessage');
+                                            const toast = new bootstrap.Toast(toastEl);
+                                            
+                                            form.addEventListener('submit', function(e) {
+                                                e.preventDefault();
+                                                
+                                                submitBtn.disabled = true;
+                                                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Sending...';
+                                                
+                                                // Create FormData object from the form
+                                                const formData = new FormData(form);
+                                                
+                                                fetch(form.action, {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                                        'X-Requested-With': 'XMLHttpRequest',
+                                                        'Accept': 'application/json'
+                                                    },
+                                                    body: formData
+                                                })
+                                                .then(async response => {
+                                                    const data = await response.json();
+                                                    
+                                                    // If the response is not ok, throw an error with the response data
+                                                    if (!response.ok) {
+                                                        throw data;
+                                                    }
+                                                    return data;
+                                                })
+                                                .then(data => {
+                                                    if (data.success) {
+                                                        // Reset form
+                                                        form.reset();
+                                                        
+                                                        // Close modal
+                                                        const modalInstance = bootstrap.Modal.getInstance(modal);
+                                                        modalInstance.hide();
+                                                        
+                                                        // Show success message
+                                                        showToast('success', data.message || 'Your message has been sent successfully!');
+                                                    } else {
+                                                        throw new Error(data.message || 'There was an error sending your message.');
+                                                    }
+                                                })
+                                                .catch(error => {
+                                                    console.error('Error:', error);
+                                                    const errorMessage = error.message || 
+                                                                      (error.errors ? Object.values(error.errors).flat().join(' ') : null) || 
+                                                                      'An error occurred. Please try again.';
+                                                    showToast('error', errorMessage);
+                                                })
+                                                .finally(() => {
+                                                    submitBtn.disabled = false;
+                                                    submitBtn.innerHTML = '<i class="fas fa-paper-plane me-1"></i> Send Message';
+                                                });
+                                            });
+                                            
+                                            function showToast(type, message) {
+                                                // Set message
+                                                toastMessage.textContent = message;
+                                                
+                                                // Update toast style based on type
+                                                if (type === 'success') {
+                                                    toastEl.classList.remove('bg-danger');
+                                                    toastEl.classList.add('bg-success');
+                                                } else {
+                                                    toastEl.classList.remove('bg-success');
+                                                    toastEl.classList.add('bg-danger');
+                                                }
+                                                
+                                                // Show toast
+                                                toast.show();
+                                                
+                                                // Hide toast after 5 seconds
+                                                setTimeout(() => {
+                                                    toast.hide();
+                                                }, 5000);
+                                            }
+                                            
+                                            // Reset toast state when modal is closed
+                                            modal.addEventListener('hidden.bs.modal', function () {
+                                                // Reset form when modal is closed
+                                                form.reset();
+                                                
+                                                // Reset any error states
+                                                const errorElements = form.querySelectorAll('.is-invalid');
+                                                errorElements.forEach(el => {
+                                                    el.classList.remove('is-invalid');
+                                                });
+                                                
+                                                // Reset toast to success state
+                                                toastEl.classList.remove('bg-danger');
+                                                toastEl.classList.add('bg-success');
+                                            });
+                                            
+                                            // Clear validation errors when input changes
+                                            form.querySelectorAll('input, textarea').forEach(input => {
+                                                input.addEventListener('input', function() {
+                                                    if (this.classList.contains('is-invalid')) {
+                                                        this.classList.remove('is-invalid');
+                                                        const errorElement = this.nextElementSibling;
+                                                        if (errorElement && errorElement.classList.contains('text-danger')) {
+                                                            errorElement.remove();
+                                                        }
+                                                    }
+                                                });
+                                            });
+                                        });
+                                    </script>
+                                    @endpush
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Global Toast Notification (Moved outside modal) -->
+<div class="position-fixed" style="z-index: 1100; bottom: 1rem; right: 1rem; left: 1rem; max-width: 400px; margin: 0 auto;">
+    <div id="successToast" class="toast w-100" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex align-items-center p-2">
+            <div class="toast-body d-flex align-items-center">
+                <i class="fas fa-check-circle me-2" style="font-size: 1.25rem;"></i>
+                <span id="toastMessage" class="me-2">Your message has been sent successfully!</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
 <style>
+    /* Responsive toast styles */
+    @media (max-width: 575.98px) {
+        .toast {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0.5rem 0;
+            border-radius: 0.5rem;
+        }
+        
+        .toast-body {
+            padding: 0.75rem;
+        }
+    }
+    
+    /* Toast success/error states */
+    .toast {
+        background: #198754; /* Bootstrap success color as fallback */
+        color: white;
+        border: none;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+    
+    .toast.bg-success {
+        background-color: #198754 !important;
+    }
+    
+    .toast.bg-danger {
+        background-color: #dc3545 !important;
+    }
+</style>
+
+<style>
+    /* Quick Actions List Style */
+    .quick-actions-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    
+    .quick-action-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem 1.25rem;
+        background: #fff;
+        border-radius: 0.75rem;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.2s ease;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    
+    .quick-action-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        text-decoration: none;
+    }
+    
+    .quick-action-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1.25rem;
+        flex-shrink: 0;
+    }
+    
+    .quick-action-icon i {
+        font-size: 1.25rem;
+    }
+    
+    .quick-action-content {
+        flex-grow: 1;
+        min-width: 0;
+    }
+    
+    .quick-action-content h6 {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #1a202c;
+        margin: 0 0 0.15rem 0;
+        word-break: break-word;
+        white-space: normal;
+        overflow: visible;
+    }
+    
+    .quick-action-content p {
+        font-size: 0.8rem;
+        color: #718096;
+        margin: 0;
+        word-break: break-word;
+        white-space: normal;
+        overflow: visible;
+    }
+    
+    /* Mobile-specific adjustments */
+    @media (max-width: 767.98px) {
+        .quick-action-item {
+            padding: 1rem;
+        }
+        
+        .quick-action-content h6 {
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+        
+        .quick-action-content p {
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+        
+        .quick-action-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 1rem;
+        }
+        
+        .quick-action-arrow {
+            margin-left: 0.5rem;
+        }
+    }
+    
+    .quick-action-arrow {
+        color: #a0aec0;
+        margin-left: 0.5rem;
+        opacity: 0.7;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        .quick-action-item {
+            background: #2d3748;
+            border-color: #4a5568;
+        }
+        .quick-action-content h6 {
+            color: #f7fafc;
+        }
+        .quick-action-content p {
+            color: #a0aec0;
+        }
+    }
+        margin: 0 auto;
+    }
+    .bg-purple {
+        background-color: #6f42c1;
+    }
+    .text-purple {
+        color: #6f42c1;
+    }
+    
     /* Base Styles */
     :root {
         --card-radius: 12px;

@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Traits\LogsActivity;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -11,9 +9,6 @@ use Illuminate\Support\Facades\Storage;
 
 class About extends Model
 {
-    use LogsActivity;
-
-
     use HasFactory;
 
     protected $fillable = [

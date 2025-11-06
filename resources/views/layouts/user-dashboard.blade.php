@@ -670,185 +670,8 @@
         <i class="fas fa-arrow-up"></i>
     </button>
     
-    <!-- Activity Management Script -->
-    <!-- Add CSRF token meta tag if not already present -->
+    <!-- CSRF Token for AJAX -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    
-    <script>
-        // Add CSRF token to all AJAX requests
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        });
-
-        $(document).ready(function() {
-            let isLoading = false;
-            let currentPage = 1;
-            const perPage = 5;
-            let hasMore = true;
-            
-            // Debounce function to prevent rapid successive clicks
-            function debounce(func, wait) {
-                let timeout;
-                return function() {
-                    const context = this;
-                    const args = arguments;
-                    clearTimeout(timeout);
-                    timeout = setTimeout(() => {
-                        func.apply(context, args);
-                    }, wait);
-                };
-            }
-
-            // Function to load activities
-            function loadActivities(page = 1, append = false) {
-                if (isLoading) return;
-                
-                isLoading = true;
-                const $loadMoreBtn = $('#load-more-activities');
-                const $refreshBtn = $('#refresh-activities');
-                
-                // Update UI for loading state
-                if (page === 1) {
-                    $refreshBtn.html('<i class="fas fa-sync-alt fa-spin"></i>');
-                } else {
-                    $loadMoreBtn.html('<i class="fas fa-spinner fa-spin me-1"></i> Loading...');
-                }
-                
-                $.ajax({
-                    url: '{{ route("user.activities") }}',
-                    type: 'GET',
-                    data: {
-                        page: page,
-                        per_page: perPage
-                    },
-                    success: function(response) {
-                        if (response.activities.length === 0) {
-                            hasMore = false;
-                            if (page === 1) {
-                                $('#activities-container').html(`
-                                    <div class="text-center py-4">
-                                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                                        <p class="text-muted">No activities found</p>
-                                        <button class="btn btn-sm btn-outline-primary mt-2" id="retry-load-activities">
-                                            <i class="fas fa-sync-alt me-1"></i> Refresh
-                                        </button>
-                                    </div>
-                                `);
-                                $loadMoreBtn.hide();
-                            } else {
-                                $loadMoreBtn.hide();
-                            }
-                            return;
-                        }
-                        
-                        const activitiesHtml = response.activities.map(activity => {
-                            const progressBar = activity.progress > 0 ? `
-                                <div class="progress mt-2" style="height: 4px;">
-                                    <div class="progress-bar bg-${activity.status.class}" role="progressbar" 
-                                         style="width: ${activity.progress}%" 
-                                         aria-valuenow="${activity.progress}" 
-                                         aria-valuemin="0" 
-                                         aria-valuemax="100">
-                                    </div>
-                                </div>
-                                <small class="text-muted d-block mt-1">${activity.progress}% completed</small>
-                            ` : '';
-                            
-                            return `
-                                <div class="activity-item p-3 border-bottom">
-                                    <div class="d-flex">
-                                        <div class="activity-icon bg-${activity.status.class}-subtle text-${activity.status.class} p-2 rounded-circle me-3 flex-shrink-0">
-                                            <i class="fas fa-${activity.icon}"></i>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <div class="d-flex justify-content-between align-items-start">
-                                                <h6 class="mb-1 fw-medium">${activity.title}</h6>
-                                                <span class="badge bg-${activity.status.class}-subtle text-${activity.status.class} small">
-                                                    ${activity.status.text}
-                                                </span>
-                                            </div>
-                                            <p class="text-muted small mb-1">${activity.description || ''}</p>
-                                            <div class="activity-meta text-muted small">
-                                                <span class="meta-item">
-                                                    <i class="far fa-clock me-1"></i>
-                                                    <span>${activity.time}</span>
-                                                </span>
-                                            </div>
-                                            ${progressBar}
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                        }).join('');
-                        
-                        if (append) {
-                            $('#activities-container').append(activitiesHtml);
-                        } else {
-                            $('#activities-container').html(activitiesHtml);
-                        }
-                        
-                        currentPage = page;
-                        hasMore = response.activities.length === perPage;
-                        
-                        if (!hasMore) {
-                            $loadMoreBtn.hide();
-                        } else {
-                            $loadMoreBtn.html('<i class="fas fa-arrow-down me-1"></i> Load More Activities').show();
-                        }
-                    },
-                    error: function(xhr) {
-                        console.error('Error loading activities:', xhr);
-                        const errorMessage = xhr.responseJSON?.message || 'Failed to load activities. Please try again later.';
-                        $('#activities-container').html(`
-                            <div class="alert alert-danger m-3">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-exclamation-circle me-2"></i>
-                                    <span>${errorMessage}</span>
-                                </div>
-                                <button class="btn btn-sm btn-outline-danger mt-2" id="retry-load-activities">
-                                    <i class="fas fa-sync-alt me-1"></i> Retry
-                                </button>
-                            </div>
-                        `);
-                    },
-                    complete: function() {
-                        isLoading = false;
-                        $refreshBtn.html('<i class="fas fa-sync-alt"></i>');
-                    }
-                });
-            }
-
-            // Initial load
-            loadActivities(1);
-
-            // Load more activities with debounce
-            $(document).on('click', '#load-more-activities', debounce(function(e) {
-                e.preventDefault();
-                if (!hasMore || isLoading) return;
-                loadActivities(currentPage + 1, true);
-            }, 300));
-
-            // Refresh activities with debounce
-            $(document).on('click', '#refresh-activities', debounce(function() {
-                if (isLoading) return;
-                currentPage = 1;
-                hasMore = true;
-                loadActivities(1, false);
-                $('#load-more-activities').show();
-            }, 300));
-
-            // Retry loading activities on error
-            $(document).on('click', '#retry-load-activities', debounce(function() {
-                loadActivities(currentPage, false);
-            }, 300));
-            hasMore = true;
-            $('#load-more-activities').show();
-            loadActivities(1);
-        });
-    </script>
     
     <style>
         @keyframes bounce {
@@ -868,6 +691,14 @@
     </style>
     
     <script>
+        // Initialize CSRF token for AJAX requests
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+
         // Show/hide button on scroll
         const goToTopBtn = document.getElementById('goToTopBtn');
         

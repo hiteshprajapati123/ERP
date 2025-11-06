@@ -9,7 +9,6 @@ use App\Models\User;
 class Fee extends Model
 {
     use HasFactory;
-    use \App\Traits\LogsActivity;
 
     protected $fillable = [
         'user_id',

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\UserActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -77,21 +76,6 @@ class ProfileController extends Controller
 
         // Update user
         $user->update($validated);
-
-        // Log the profile update activity if there are changes
-        if (!empty($changedFields)) {
-            $changesDescription = 'Updated profile information';
-            
-            UserActivity::log(
-                $user->id,
-                UserActivity::TYPE_UPDATED,
-                $changesDescription,
-                UserActivity::MODEL_PROFILE,
-                $user->id,
-                [], // Don't store old values
-                []  // Don't store new values
-            );
-        }
 
         if (request()->ajax() || request()->wantsJson()) {
             return response()->json([

@@ -560,53 +560,107 @@
                 <div class="card-header bg-white border-0 py-3">
                     <h5 class="mb-0 text-dark">Notes</h5>
                 </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover" id="attendanceNotesTable">
-                            <thead class="bg-light">
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Status</th>
-                                    <th>Notes</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @php
-                                    $userAttendances = \App\Models\Attendance::where('user_id', auth()->id())
-                                        ->whereNotNull('notes')
-                                        ->orderBy('date', 'desc')
-                                        ->take(10) // Show last 10 notes
-                                        ->get();
-                                @endphp
-                                
-                                @forelse($userAttendances as $attendance)
+                <div class="card-body p-0">
+                    @php
+                        $userAttendances = \App\Models\Attendance::where('user_id', auth()->id())
+                                ->whereNotNull('notes')
+                                ->orderBy('date', 'desc')
+                                ->take(10)
+                                ->get();
+                    @endphp
+                    
+                    <!-- Desktop View -->
+                    <div class="d-none d-md-block">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0" id="attendanceNotesTable">
+                                <thead class="bg-light">
                                     <tr>
-                                        <td>{{ \Carbon\Carbon::parse($attendance->date)->format('M d, Y') }}</td>
-                                        <td>
-                                            @php
-                                                $statusClass = [
-                                                    'present' => 'bg-success',
-                                                    'absent' => 'bg-danger',
-                                                ][$attendance->status] ?? 'bg-secondary';
-                                            @endphp
-                                            <span class="badge {{ $statusClass }}">
-                                                {{ ucfirst($attendance->status) }}
-                                            </span>
-                                        </td>
-                                        <td>{{ $attendance->notes }}</td>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Notes</th>
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="3" class="text-center">No notes found</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @forelse($userAttendances as $attendance)
+                                        <tr>
+                                            <td>{{ \Carbon\Carbon::parse($attendance->date)->format('M d, Y') }}</td>
+                                            <td>
+                                                @php
+                                                    $statusClass = [
+                                                        'present' => 'bg-success',
+                                                        'absent' => 'bg-danger',
+                                                    ][$attendance->status] ?? 'bg-secondary';
+                                                @endphp
+                                                <span class="badge {{ $statusClass }}">
+                                                    {{ ucfirst($attendance->status) }}
+                                                </span>
+                                            </td>
+                                            <td>{{ $attendance->notes }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="3" class="text-center py-4">No notes found</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Mobile View -->
+                    <div class="d-md-none">
+                        @forelse($userAttendances as $attendance)
+                            @php
+                                $statusClass = [
+                                    'present' => 'bg-success',
+                                    'absent' => 'bg-danger',
+                                ][$attendance->status] ?? 'bg-secondary';
+                            @endphp
+                            <div class="border-bottom p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted small">{{ \Carbon\Carbon::parse($attendance->date)->format('M d, Y') }}</span>
+                                    <span class="badge {{ $statusClass }}">
+                                        {{ ucfirst($attendance->status) }}
+                                    </span>
+                                </div>
+                                <div class="notes-content">
+                                    {{ $attendance->notes }}
+                                </div>
+                            </div>
+                        @empty
+                            <div class="text-center py-4">No notes found</div>
+                        @endforelse
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    
+    <style>
+        /* Mobile styles */
+        @media (max-width: 767.98px) {
+            .notes-content {
+                font-size: 0.9rem;
+                line-height: 1.5;
+                color: #333;
+            }
+            
+            .card-body {
+                padding: 0 !important;
+            }
+            
+            .border-bottom:last-child {
+                border-bottom: none !important;
+            }
+        }
+        
+        /* Desktop styles */
+        @media (min-width: 768px) {
+            .table th, .table td {
+                padding: 0.75rem 1.5rem;
+            }
+        }
+    </style>
 
     @push('styles')
     <style>

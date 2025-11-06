@@ -15,9 +15,6 @@ use App\Http\Controllers\ZakatController;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\Auth\LoginController;
 
-// Include user activities routes
-require __DIR__.'/user-activities.php';
-
 // Home Route
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
