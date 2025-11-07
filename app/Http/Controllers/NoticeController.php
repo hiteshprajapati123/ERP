@@ -10,23 +10,29 @@ class NoticeController extends Controller
     public function index()
     {
         $search = request('search');
-        $type = request('type');
+        $categoryId = request('category');
 
-        $notices = Notice::published()
+        $notices = Notice::with('category')
+            ->published()
             ->when($search, function($query) use ($search) {
                 $query->where(function($q) use ($search) {
                     $q->where('title', 'like', "%{$search}%")
                       ->orWhere('description', 'like', "%{$search}%");
                 });
             })
-            ->when($type, function($query) use ($type) {
-                $query->where('type', $type);
+            ->when($categoryId, function($query) use ($categoryId) {
+                $query->where('category_id', $categoryId);
             })
             ->orderBy('notice_date', 'desc')
             ->paginate(6)
             ->withQueryString();
 
-        return view('notices.index', compact('notices'));
+        $categories = \App\Models\NoticeCategory::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['id','name']);
+
+        return view('notices.index', compact('notices', 'categories'));
     }
 
     public function show(Notice $notice)
@@ -44,6 +50,25 @@ class NoticeController extends Controller
             abort(404);
         }
 
-        return response()->download(storage_path('app/' . $notice->file_path), $notice->file_name);
+        $fullPath = \Storage::disk('private')->path($notice->file_path);
+        if (!file_exists($fullPath)) {
+            abort(404);
+        }
+
+        return response()->download($fullPath, $notice->file_name);
+    }
+
+    public function image(Notice $notice)
+    {
+        if (!$notice->is_published || !$notice->image_path) {
+            abort(404);
+        }
+
+        $fullPath = \Storage::disk('private')->path($notice->image_path);
+        if (!file_exists($fullPath)) {
+            abort(404);
+        }
+
+        return response()->file($fullPath);
     }
 }

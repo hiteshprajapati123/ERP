@@ -32,6 +32,7 @@ class DatabaseSeeder extends Seeder
             HeroSlidesTableSeeder::class,
             AboutSectionSeeder::class,
             AboutSeeder::class,
+            NoticeCategorySeeder::class,
             NoticeSeeder::class,
             FeeSeeder::class,
             EventSeeder::class,

@@ -15,7 +15,6 @@ class PaperSeeder extends Seeder
         $papers = [
             [
                 'title' => 'Mathematics - 2024',
-                'class' => '10',
                 'subject' => 'Mathematics',
                 'year' => 2024,
                 'term' => 'Annual Examination',
@@ -25,7 +24,6 @@ class PaperSeeder extends Seeder
             ],
             [
                 'title' => 'Science - 2024',
-                'class' => '9',
                 'subject' => 'Science',
                 'year' => 2024,
                 'term' => 'First Term',
@@ -35,7 +33,6 @@ class PaperSeeder extends Seeder
             ],
             [
                 'title' => 'English - 2023',
-                'class' => '8',
                 'subject' => 'English',
                 'year' => 2023,
                 'term' => 'Annual Examination',

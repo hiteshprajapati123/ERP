@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('papers', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->string('class');
             $table->string('subject');
             $table->year('year');
             $table->string('term');

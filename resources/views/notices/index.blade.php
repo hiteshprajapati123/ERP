@@ -26,13 +26,13 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <select name="type" class="form-select" onchange="this.form.submit()">
+                                <select name="category" class="form-select" onchange="this.form.submit()">
                                     <option value="">All Categories</option>
-                                    <option value="general" {{ request('type') == 'general' ? 'selected' : '' }}>General</option>
-                                    <option value="event" {{ request('type') == 'event' ? 'selected' : '' }}>Events</option>
-                                    <option value="exam" {{ request('type') == 'exam' ? 'selected' : '' }}>Exams</option>
-                                    <option value="course_material" {{ request('type') == 'course_material' ? 'selected' : '' }}>Course Materials</option>
-                                    <option value="announcement" {{ request('type') == 'announcement' ? 'selected' : '' }}>Announcements</option>
+                                    @foreach(($categories ?? []) as $cat)
+                                        <option value="{{ $cat->id }}" {{ (string) request('category') === (string) $cat->id ? 'selected' : '' }}>
+                                            {{ $cat->name }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
                         </form>
@@ -48,7 +48,7 @@
                     <div class="card h-100 border-0 shadow-sm transition-all hover:shadow-lg">
                         @if($notice->image_path)
                             <div class="notice-image-container" style="height: 200px; overflow: hidden;">
-                                <img src="{{ asset('storage/' . $notice->image_path) }}" 
+                                <img src="{{ route('notices.image', $notice) }}" 
                                      class="card-img-top h-100 w-100 object-cover" 
                                      alt="{{ $notice->title }}"
                                      style="object-fit: cover; transition: transform 0.3s ease;">
@@ -56,22 +56,9 @@
                         @endif
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start mb-2">
-                                <span class="badge rounded-pill px-3 py-2 mb-2" 
-                                      style="background: {{ $notice->type == 'event' ? 'rgba(220, 53, 69, 0.1)' : ($notice->type == 'exam' ? 'rgba(255, 193, 7, 0.1)' : 'rgba(13, 110, 253, 0.1)') }}; 
-                                             color: {{ $notice->type == 'event' ? '#dc3545' : ($notice->type == 'exam' ? '#ffc107' : '#0d6efd') }};">
-                                    @switch($notice->type)
-                                        @case('event')
-                                            <i class="bi bi-calendar-event me-1"></i> Event
-                                            @break
-                                        @case('exam')
-                                            <i class="bi bi-file-earmark-text me-1"></i> Exam
-                                            @break
-                                        @case('course_material')
-                                            <i class="bi bi-journal-bookmark me-1"></i> Course Material
-                                            @break
-                                        @default
-                                            <i class="bi bi-megaphone me-1"></i> {{ ucfirst($notice->type) }}
-                                    @endswitch
+                                <span class="badge rounded-pill px-3 py-2 mb-2" style="background: rgba(26,93,59,0.1); color: #1A5D3B;">
+                                    <i class="bi bi-megaphone me-1"></i>
+                                    {{ $notice->category->name ?? 'Notice' }}
                                 </span>
                                 <small class="text-muted">
                                     <i class="bi bi-calendar3 me-1"></i> {{ $notice->notice_date->format('M d, Y') }}

@@ -130,7 +130,17 @@
         
         /* Card Content */
         .card-body {
-            padding: 1.25rem;
+            padding: 2rem 1.25rem; /* add more breathing room */
+        }
+
+        /* Ensure text blocks have slight side inset */
+        .attendance-card .card-body .d-flex {
+            padding-inline: 0.25rem;
+        }
+        .attendance-card .card-body .card-title,
+        .attendance-card .card-body .card-value,
+        .attendance-card .card-body .card-subtitle {
+            padding-inline: 0.125rem;
         }
         
         .card-icon {
@@ -166,7 +176,7 @@
         /* Responsive Adjustments */
         @media (max-width: 768px) {
             .card-body {
-                padding: 1rem;
+                padding: 2rem; /* increase on mobile so text is not tight */
             }
             
             .card-value {

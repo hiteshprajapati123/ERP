@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->enum('type', ['general', 'event', 'exam', 'course_material', 'announcement'])->default('general');
             $table->date('notice_date');
             $table->date('expiry_date')->nullable();
             $table->boolean('is_published')->default(false);

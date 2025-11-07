@@ -22,17 +22,12 @@ return new class extends Migration
             $table->json('highlights')->nullable();
             $table->json('programs')->nullable();
             $table->text('principal_message')->nullable();
-            $table->string('principal_name')->nullable();
-            $table->string('principal_title')->nullable();
             $table->string('contact_address');
             $table->string('contact_phone');
             $table->string('contact_email');
-            $table->string('banner_image')->nullable();
-            $table->string('principal_image')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->string('meta_title')->nullable();
-            $table->text('meta_description')->nullable();
-            $table->string('meta_keywords')->nullable();
+            // banner_image removed per requirements
+            // Meta description and keywords removed per requirements
             $table->timestamps();
         });
     }

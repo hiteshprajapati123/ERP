@@ -12,7 +12,8 @@
         </div>
         <div class="d-flex align-items-center bg-light rounded-pill px-3 py-2 shadow-sm">
             <i class="far fa-calendar-alt text-primary me-2"></i>
-            <span class="fw-medium">{{ now()->format('l, F j, Y') }}</span>
+            <span class="fw-medium d-none d-sm-inline">{{ now()->format('l, F j, Y') }}</span>
+            <span class="fw-medium d-inline d-sm-none">{{ now()->format('D, M j, y') }}</span>
         </div>
     </div>
 
@@ -62,10 +63,10 @@
                                 <h6 class="d-flex text-muted text-uppercase small fw-bold mb-0 me-2">
                                     <i class="fas fa-clock me-2"></i>Pending Fees
                                 </h6>
-                                <span class="badge bg-danger text-white small px-2 py-1" style="background-color: #dc3545 !important; font-weight: 500; letter-spacing: 0.5px; white-space: nowrap;">
-                                    <i class="fas fa-exclamation-triangle me-1"></i>Overdue Soon
-                                </span>
                             </div>
+                            <span class="badge bg-danger text-white small px-2 py-1" style="background-color: #dc3545 !important; font-weight: 500; letter-spacing: 0.5px; white-space: nowrap;">
+                                <i class="fas fa-exclamation-triangle me-1"></i>Overdue Soon
+                            </span>
                             <h3 class="text-warning mb-0">₹{{ number_format($stats['pending_fees']) }}</h3>
 
                             <div class="justify-content-between align-items-center">
@@ -89,12 +90,14 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="mb-0 fw-bold">Latest Exam</h5>
-                        @if($stats['latest_exam'])
-                            <span class="badge bg-primary bg-opacity-10 text-primary small">
-                                {{ \Carbon\Carbon::parse($stats['latest_exam']->created_at)->diffForHumans() }}
-                            </span>
-                        @endif
                     </div>
+                    
+                    @if($stats['latest_exam'])
+                        <span class="badge bg-primary bg-opacity-10 text-primary small">
+                            {{ \Carbon\Carbon::parse($stats['latest_exam']->created_at)->diffForHumans() }}
+                        </span>
+                    @endif
+
                     @if($stats['latest_exam'])
                         <div class="d-flex align-items-center bg-light rounded-3 p-3">
                             <div class="text-center me-3">
@@ -609,6 +612,8 @@
         word-break: break-word;
         white-space: normal;
         overflow: visible;
+        writing-mode: horizontal-tb;
+        text-orientation: mixed;
     }
     
     .quick-action-content p {
@@ -618,32 +623,55 @@
         word-break: break-word;
         white-space: normal;
         overflow: visible;
+        writing-mode: horizontal-tb;
+        text-orientation: mixed;
     }
     
     /* Mobile-specific adjustments */
     @media (max-width: 767.98px) {
         .quick-action-item {
             padding: 1rem;
+            width: 100%;
+            overflow: hidden;
+            gap: 0.5rem; /* tighter spacing on mobile */
+            flex-direction: column;      /* stack icon above text */
+            align-items: center;         /* center contents */
+            text-align: center;          /* center text */
         }
-        
+
         .quick-action-content h6 {
             font-size: 1rem;
-            line-height: 1.4;
+            line-height: 1.3;
+            white-space: normal;          /* allow wrapping */
+            overflow: hidden;             /* contain */
+            display: -webkit-box;         /* show up to 2 lines */
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            writing-mode: horizontal-tb;
+            text-orientation: mixed;
         }
-        
+
         .quick-action-content p {
             font-size: 0.85rem;
             line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            writing-mode: horizontal-tb;
+            text-orientation: mixed;
+            margin-bottom: 0;            /* tighten */
         }
         
         .quick-action-icon {
-            width: 40px;
-            height: 40px;
-            margin-right: 1rem;
+            width: 56px;                 /* larger, square tile */
+            height: 56px;
+            margin-right: 0;             /* center above text */
+            margin-bottom: 0.25rem;
         }
         
         .quick-action-arrow {
-            margin-left: 0.5rem;
+            display: none;               /* hide arrow on mobile */
         }
     }
     
@@ -667,8 +695,6 @@
         .quick-action-content p {
             color: #a0aec0;
         }
-    }
-        margin: 0 auto;
     }
     .bg-purple {
         background-color: #6f42c1;

@@ -15,6 +15,14 @@ use App\Http\Controllers\ZakatController;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\Auth\LoginController;
 
+// Hero Slide Image Route (private)
+Route::get('/hero-slide/image/{filename}', [HomeController::class, 'heroSlideImage'])
+    ->name('hero-slide.image');
+
+// About Section Image Route (private)
+Route::get('/about-section/image/{filename}', [HomeController::class, 'aboutSectionImage'])
+    ->name('about-section.image');
+
 // Home Route
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -57,11 +65,14 @@ Route::prefix('notices')->name('notices.')->group(function () {
     Route::get('/', [NoticeController::class, 'index'])->name('index');
     Route::get('{notice:slug}', [NoticeController::class, 'show'])->name('show');
     Route::get('{notice}/download', [NoticeController::class, 'download'])->name('download');
+    Route::get('{notice}/image', [NoticeController::class, 'image'])->name('image');
 });
 
 // Public Question Papers
 Route::get('/question-papers', [\App\Http\Controllers\QuestionPaperController::class, 'index'])
     ->name('question-papers.index');
+Route::get('/question-papers/{paper}/download', [\App\Http\Controllers\QuestionPaperController::class, 'download'])
+    ->name('question-papers.download');
 
 // Authentication Routes
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('user-login');
@@ -111,4 +122,5 @@ Route::prefix('notices')->name('notices.')->group(function () {
     Route::get('/', [NoticeController::class, 'index'])->name('index');
     Route::get('{notice}', [NoticeController::class, 'show'])->name('show');
     Route::get('{notice}/download', [NoticeController::class, 'download'])->name('download');
+    Route::get('{notice}/image', [NoticeController::class, 'image'])->name('image');
 });
