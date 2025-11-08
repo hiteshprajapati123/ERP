@@ -43,6 +43,17 @@ return new class extends Migration
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        // Insert default admin user
+        DB::table('users')->insert([
+            'name' => 'Admin',
+            'email' => 'admin@example.com',
+            'phone' => '9876543210',
+            'role' => 'admin',
+            'password' => bcrypt('Reset@123'),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 
     /**

@@ -10,7 +10,6 @@ class Paper extends Model
 {
     protected $fillable = [
         'title',
-        'class',
         'subject',
         'year',
         'term',

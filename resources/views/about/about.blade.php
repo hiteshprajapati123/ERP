@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => $about->meta_title ?? 'About Us', 'meta_description' => $about->meta_description ?? '', 'meta_keywords' => $about->meta_keywords ?? ''])
+@extends('layouts.app', ['title' => $about->page_title ?? 'About Us'])
 
 @section('content')
 <style>
@@ -57,19 +57,14 @@
 
 @if($about)
 <main class="container about-page">
-    @if($about->banner_image)
-    <!-- Banner Section -->
-    <section class="banner mb-5">
-        <img src="{{ $about->banner_image_url }}" alt="{{ $about->page_title }}" class="img-fluid w-100 rounded-3 shadow">
-    </section>
-    @endif
+    {{-- Banner removed as per requirements --}}
     
     <!-- Intro Section -->
     <section class="intro">
         <h2>{{ $about->page_title }}</h2>
         <div class="row">
             <div class="content">
-                {!! $about->intro_content !!}
+                {{ $about->intro_content }}
             </div>
         </div>
     </section>
@@ -100,7 +95,7 @@
     <section class="history">
         <h2>Our History</h2>
         <div class="content">
-            {!! $about->history_content !!}
+            {{ $about->history_content }}
         </div>
     </section>
     @endif
@@ -111,7 +106,18 @@
         <h2>What We Offer</h2>
         <ul>
             @foreach($about->decoded_what_we_offer as $item)
-            <li>{!! $item !!}</li>
+            @php
+                $t = strtolower($item);
+                $icon = 'fa-check-circle';
+                if (str_contains($t, 'islamic')) $icon = 'fa-book-open';
+                elseif (str_contains($t, 'academic')) $icon = 'fa-graduation-cap';
+                elseif (str_contains($t, 'computer')) $icon = 'fa-laptop-code';
+                elseif (str_contains($t, 'co-curricular') || str_contains($t, 'co curricular')) $icon = 'fa-users';
+            @endphp
+            <li>
+                <i class="fas {{ $icon }}" style="color:#1A5D3B; margin-right:8px;"></i>
+                {{ $item }}
+            </li>
             @endforeach
         </ul>
     </section>
@@ -123,7 +129,19 @@
         <h2>Highlights</h2>
         <ul>
             @foreach($about->decoded_highlights as $highlight)
-            <li>{!! $highlight !!}</li>
+            @php
+                $t = strtolower($highlight);
+                $icon = 'fa-star';
+                if (str_contains($t, 'quality')) $icon = 'fa-award';
+                elseif (str_contains($t, 'teacher')) $icon = 'fa-chalkboard-teacher';
+                elseif (str_contains($t, 'community')) $icon = 'fa-handshake';
+                elseif (str_contains($t, 'technology') || str_contains($t, 'computer')) $icon = 'fa-laptop-code';
+                elseif (str_contains($t, 'holistic') || str_contains($t, 'growth')) $icon = 'fa-seedling';
+            @endphp
+            <li>
+                <i class="fas {{ $icon }}" style="color:#D4AF37; margin-right:8px;"></i>
+                {{ $highlight }}
+            </li>
             @endforeach
         </ul>
     </section>
@@ -135,7 +153,18 @@
         <h2>Programs We Offer</h2>
         <ul>
             @foreach($about->decoded_programs as $program)
-            <li>{{ $program }}</li>
+            @php
+                $t = strtolower($program);
+                $icon = 'fa-book-open';
+                if (str_contains($t, 'islamic')) $icon = 'fa-book-open';
+                elseif (str_contains($t, 'academic')) $icon = 'fa-graduation-cap';
+                elseif (str_contains($t, 'computer')) $icon = 'fa-desktop';
+                elseif (str_contains($t, 'co-curricular') || str_contains($t, 'co curricular')) $icon = 'fa-users';
+            @endphp
+            <li>
+                <i class="fas {{ $icon }}" style="color:#1A5D3B; margin-right:8px;"></i>
+                {{ $program }}
+            </li>
             @endforeach
         </ul>
     </section>
@@ -144,24 +173,9 @@
     @if($about->principal_message)
     <!-- Principal Message -->
     <section class="message">
-        <h2>Message from the {{ $about->principal_title ?? 'Head' }}</h2>
-        <div class="row align-items-center">
-            @if($about->principal_image)
-            <div class="col-md-3 text-center mb-4 mb-md-0">
-                <img src="{{ $about->principal_image_url }}" alt="{{ $about->principal_name ?? 'Principal' }}" class="img-fluid rounded-circle shadow" style="max-width: 200px;">
-                @if($about->principal_name)
-                <h4 class="mt-3 mb-0">{{ $about->principal_name }}</h4>
-                @endif
-                @if($about->principal_title)
-                <p class="text-muted">{{ $about->principal_title }}</p>
-                @endif
-            </div>
-            @endif
-            <div class="{{ $about->principal_image ? 'col-md-9' : 'col-12' }}">
-                <div class="content">
-                    {!! $about->principal_message !!}
-                </div>
-            </div>
+        <h2>Message from the Head</h2>
+        <div class="content">
+            {{ $about->principal_message }}
         </div>
     </section>
     @endif

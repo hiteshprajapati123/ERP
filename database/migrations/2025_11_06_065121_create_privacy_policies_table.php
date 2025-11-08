@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('subtitle');
             $table->text('introduction');
-            $table->json('sections');
+            $table->json('sections')->nullable();
             $table->string('last_updated');
             $table->boolean('is_active')->default(true);
             $table->timestamps();

@@ -13,7 +13,7 @@ class Notice extends Model
     protected $fillable = [
         'title',
         'description',
-        'type',
+        'category_id',
         'notice_date',
         'expiry_date',
         'is_published',
@@ -54,14 +54,29 @@ class Notice extends Model
 
     public function getFileSizeAttribute($value)
     {
-        if ($value >= 1073741824) {
-            return number_format($value / 1073741824, 2) . ' GB';
-        } elseif ($value >= 1048576) {
-            return number_format($value / 1048576, 2) . ' MB';
-        } elseif ($value >= 1024) {
-            return number_format($value / 1024, 2) . ' KB';
+        if ($value === null || $value === '') {
+            return null;
         }
 
-        return $value . ' bytes';
+        if (!is_numeric($value)) {
+            return (string) $value;
+        }
+
+        $bytes = (int) $value;
+
+        if ($bytes >= 1073741824) {
+            return number_format($bytes / 1073741824, 2) . ' GB';
+        } elseif ($bytes >= 1048576) {
+            return number_format($bytes / 1048576, 2) . ' MB';
+        } elseif ($bytes >= 1024) {
+            return number_format($bytes / 1024, 2) . ' KB';
+        }
+
+        return $bytes . ' bytes';
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(NoticeCategory::class, 'category_id');
     }
 }

@@ -38,27 +38,11 @@ class AboutController extends Controller
             'highlights' => 'nullable|array',
             'programs' => 'nullable|array',
             'principal_message' => 'nullable|string',
-            'principal_name' => 'nullable|string|max:255',
-            'principal_title' => 'nullable|string|max:255',
             'contact_address' => 'required|string',
             'contact_phone' => 'required|string|max:20',
             'contact_email' => 'required|email|max:255',
-            'banner_image' => 'nullable|image|max:2048',
-            'principal_image' => 'nullable|image|max:2048',
             'is_active' => 'boolean',
-            'meta_title' => 'nullable|string|max:255',
-            'meta_description' => 'nullable|string',
-            'meta_keywords' => 'nullable|string',
         ]);
-
-        // Handle file uploads
-        if ($request->hasFile('banner_image')) {
-            $validated['banner_image'] = $request->file('banner_image')->store('about', 'public');
-        }
-
-        if ($request->hasFile('principal_image')) {
-            $validated['principal_image'] = $request->file('principal_image')->store('about', 'public');
-        }
 
         // Convert arrays to JSON
         if (isset($validated['what_we_offer'])) {

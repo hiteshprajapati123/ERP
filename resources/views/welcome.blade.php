@@ -410,7 +410,7 @@
             <div class="swiper mySwiper">
                 <div class="swiper-wrapper">
                     @foreach($slides as $slide)
-                    <div class="swiper-slide" style="background-image:url('{{ asset('storage/' . $slide->image) }}')">
+                    <div class="swiper-slide" style="background-image:url('{{ $slide->image_url }}')">
                         <div class="slide-content">
                             <h1>{{ $slide->title }}</h1>
                             @if($slide->description)
@@ -455,7 +455,7 @@
                     <div class="about-image" style="flex: 0 0 100%; max-width: 100%; padding: 0 15px 30px; box-sizing: border-box; order: 1;">
                         <div style="position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 15px 30px rgba(0,0,0,0.1); transition: all 0.3s ease; height: 100%;">
                             <img 
-                                src="{{ $aboutSection->image ? asset('storage/' . $aboutSection->image) : 'https://via.placeholder.com/800x500?text=Madrasa+Campus' }}" 
+                                src="{{ $aboutSection->image_url ?? 'https://via.placeholder.com/800x500?text=Madrasa+Campus' }}" 
                                 alt="{{ $aboutSection->title }}" 
                                 style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;"
                                 onmouseover="this.style.transform='scale(1.03)'; this.parentNode.style.boxShadow='0 20px 40px rgba(0,0,0,0.15)'" 

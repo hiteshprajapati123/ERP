@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Storage;
+// use Illuminate\Support\Facades\Storage;
 
 class About extends Model
 {
@@ -21,17 +21,11 @@ class About extends Model
         'highlights',
         'programs',
         'principal_message',
-        'principal_name',
-        'principal_title',
         'contact_address',
         'contact_phone',
         'contact_email',
-        'banner_image',
-        'principal_image',
         'is_active',
-        'meta_title',
-        'meta_description',
-        'meta_keywords'
+        // meta_title, meta_description, meta_keywords removed
     ];
 
     protected $casts = [
@@ -41,20 +35,10 @@ class About extends Model
         'is_active' => 'boolean'
     ];
 
-    protected $appends = [
-        'banner_image_url',
-        'principal_image_url'
-    ];
+    // protected $appends = [
+    // ];
 
-    public function getBannerImageUrlAttribute()
-    {
-        return $this->banner_image ? Storage::url($this->banner_image) : asset('images/default-banner.jpg');
-    }
-
-    public function getPrincipalImageUrlAttribute()
-    {
-        return $this->principal_image ? Storage::url($this->principal_image) : asset('images/default-avatar.jpg');
-    }
+    // banner image removed
 
     public function getDecodedWhatWeOfferAttribute()
     {

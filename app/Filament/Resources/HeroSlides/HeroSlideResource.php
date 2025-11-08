@@ -1,0 +1,57 @@
+<?php
+
+namespace App\Filament\Resources\HeroSlides;
+
+use App\Filament\Resources\HeroSlides\Pages\CreateHeroSlide;
+use App\Filament\Resources\HeroSlides\Pages\EditHeroSlide;
+use App\Filament\Resources\HeroSlides\Pages\ListHeroSlides;
+use App\Filament\Resources\HeroSlides\Schemas\HeroSlideForm;
+use App\Filament\Resources\HeroSlides\Tables\HeroSlidesTable;
+use App\Models\HeroSlide;
+use BackedEnum;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Table;
+
+class HeroSlideResource extends Resource
+{
+    protected static ?string $model = HeroSlide::class;
+
+    // Use a photo icon in the sidebar
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-photo';
+
+    // Place this resource inside a dropdown group in the navigation
+    protected static string|\UnitEnum|null $navigationGroup = 'Homepage';
+
+    // Optional: sort order within its group
+    protected static ?int $navigationSort = 1;
+
+    protected static ?string $recordTitleAttribute = 'Hero Slider';
+
+    public static function form(Schema $schema): Schema
+    {
+        return HeroSlideForm::configure($schema);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return HeroSlidesTable::configure($table);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => ListHeroSlides::route('/'),
+            'create' => CreateHeroSlide::route('/create'),
+            'edit' => EditHeroSlide::route('/{record}/edit'),
+        ];
+    }
+}

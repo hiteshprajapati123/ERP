@@ -54,18 +54,6 @@
             --header-height: 60px;
         }
 
-        /* Dark Theme Overrides */
-        [data-theme="dark"] {
-            --bg-light: #111827;          /* Gray 900 */
-            --bg-card: #1f2937;           /* Gray 800 */
-            --text-primary: #f9fafb;      /* Gray 50 */
-            --text-secondary: #9ca3af;    /* Gray 400 */
-            --border-color: #374151;      /* Gray 700 */
-            
-            --sidebar-bg: #111827;        /* Gray 900 */
-            --sidebar-hover: #1f2937;     /* Gray 800 */
-        }
-
         /* Base Styles */
         body {
             font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -286,101 +274,6 @@
             box-shadow: 0 0 0 0.25rem rgba(79, 70, 229, 0.25);
         }
 
-        /* Theme Toggle */
-        .theme-toggle-container {
-            display: flex;
-            align-items: center;
-            margin: 0 10px;
-        }
-
-        .theme-toggle {
-            --size: 1.5rem;
-            --icon-size: 0.8em;
-            --padding: 0.2em;
-            --track-width: calc(var(--size) * 1.8);
-            --track-height: calc(var(--size) * 1);
-            --thumb-size: calc(var(--track-height) - (var(--padding) * 2));
-            
-            position: relative;
-            width: var(--track-width);
-            height: var(--track-height);
-            padding: var(--padding);
-            background: var(--bg-card);
-            border: 2px solid var(--border-color);
-            border-radius: 100px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            overflow: visible;
-        }
-
-        .theme-toggle:hover {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px var(--primary-light);
-        }
-
-        .theme-toggle:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px var(--primary-light);
-        }
-
-        .theme-toggle-track {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        .theme-toggle-handle {
-            position: absolute;
-            top: 50%;
-            left: var(--padding);
-            width: var(--thumb-size);
-            height: var(--thumb-size);
-            background: var(--primary-color);
-            border-radius: 50%;
-            transform: translateY(-50%);
-            transition: all 0.3s cubic-bezier(0.4, 0.03, 0.17, 1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2;
-        }
-
-        .theme-toggle-icon {
-            position: absolute;
-            color: white;
-            font-size: var(--icon-size);
-            transition: all 0.3s ease;
-            opacity: 0.8;
-        }
-
-        .theme-toggle-sun {
-            left: 0.3em;
-            opacity: 0;
-            transform: scale(0.5);
-        }
-
-        .theme-toggle-moon {
-            right: 0.3em;
-            opacity: 0.5;
-            transform: scale(0.5);
-        }
-
-        [data-theme="dark"] .theme-toggle-handle {
-            left: calc(100% - var(--thumb-size) - var(--padding));
-            background: var(--primary-color);
-        }
-
-        [data-theme="dark"] .theme-toggle-sun {
-            opacity: 0.5;
-            transform: scale(1);
-        }
-
-        [data-theme="dark"] .theme-toggle-moon {
-            opacity: 0;
-            transform: scale(0.5);
-        }
-
         /* Icons */
         .nav-icon {
             font-size: 1.25rem;
@@ -502,23 +395,6 @@
                     </button>
                     
                     <div class="d-flex align-items-center ms-auto gap-3">
-                        <!-- Theme Toggle Button Removed -->
-                        
-                        <!-- Notifications Dropdown -->
-                        <div class="dropdown">
-                            <a href="#" class="nav-link position-relative" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-bell nav-icon"></i>
-                                <span class="notification-badge">3</span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-end">
-                                <li><h6 class="dropdown-header">Notifications</h6></li>
-                                <li><a class="dropdown-item" href="#">New message from John</a></li>
-                                <li><a class="dropdown-item" href="#">Assignment due tomorrow</a></li>
-                                <li><a class="dropdown-item" href="#">New course available</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-primary" href="#">View all notifications</a></li>
-                            </ul>
-                        </div>
                         
                         <!-- User Dropdown -->
                         <div class="dropdown">
@@ -587,43 +463,6 @@
                 }
             }
             
-            // Initialize theme if toggle exists
-            function initTheme() {
-                const savedTheme = localStorage.getItem('theme') || 'light';
-                const html = document.documentElement;
-                const themeToggle = document.getElementById('themeToggle');
-                
-                // Set theme
-                html.setAttribute('data-theme', savedTheme);
-                
-                // Only proceed if theme toggle exists
-                if (themeToggle) {
-                    // Set button state
-                    if (savedTheme === 'dark') {
-                        themeToggle.classList.add('dark');
-                    } else {
-                        themeToggle.classList.remove('dark');
-                    }
-                    
-                    // Add click event for theme toggle
-                    themeToggle.addEventListener('click', function() {
-                        const currentTheme = html.getAttribute('data-theme');
-                        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                        
-                        // Update theme attribute
-                        html.setAttribute('data-theme', newTheme);
-                        localStorage.setItem('theme', newTheme);
-                        
-                        // Update button state
-                        if (newTheme === 'dark') {
-                            themeToggle.classList.add('dark');
-                        } else {
-                            themeToggle.classList.remove('dark');
-                        }
-                    });
-                }
-            }
-            
             // Initialize sidebar state
             function initSidebar() {
                 const isOpen = localStorage.getItem('sidebarOpen') === 'true';
@@ -657,7 +496,6 @@
             }
             
             // Initialize everything
-            initTheme();
             initSidebar();
             window.addEventListener('resize', handleResize);
         });

@@ -29,4 +29,41 @@ class AboutSection extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
+    /**
+     * Get a public URL for the about section image.
+     */
+    public function getImageUrlAttribute(): string
+    {
+        if (! $this->image) {
+            return asset('images/placeholder.jpg');
+        }
+
+        // already a full URL
+        if (filter_var($this->image, FILTER_VALIDATE_URL)) {
+            return $this->image;
+        }
+
+        // Private disk path check
+        $filename = basename($this->image);
+        if (\Illuminate\Support\Facades\Storage::disk('private')->exists('about(homepage)/' . $filename)) {
+            return route('about-section.image', ['filename' => $filename]);
+        }
+
+        // Fallback to public storage if present
+        $publicPath = 'storage/' . ltrim($this->image, '/');
+        if (file_exists(public_path($publicPath))) {
+            return asset($publicPath);
+        }
+
+        \Log::warning('AboutSection image not found', [
+            'image' => $this->image,
+            'checked' => [
+                storage_path('app/private/about(homepage)/' . $filename),
+                public_path($publicPath),
+            ],
+        ]);
+
+        return asset('images/placeholder.jpg');
+    }
 }
