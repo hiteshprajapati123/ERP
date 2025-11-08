@@ -18,10 +18,17 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'name',
         'email',
+        'password',
         'phone',
+        'roll_number',
         'father_name',
         'mother_name',
         'date_of_birth',
@@ -44,6 +51,7 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
 
     /**
      * Get the attendance records for the user.
@@ -84,7 +92,6 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed',
         'date_of_birth' => 'date',
     ];
 

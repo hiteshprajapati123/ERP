@@ -23,25 +23,33 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6 mb-4 mb-lg-0">
-                    <img src="{{ $fitraa->what_is_image ? asset('storage/' . $fitraa->what_is_image) : 'https://img.freepik.com/free-vector/ramadan-kareem-illustration_23-2148596132.jpg' }}" alt="What is Fitraa" class="img-fluid rounded-3 shadow">
+                    @if($fitraa->what_is_image)
+                        <img src="{{ route('fitraa.files', $fitraa->what_is_image) }}" alt="What is Fitraa" class="img-fluid rounded-3 shadow">
+                    @else
+                        <img src="{{ asset('images/default-what-is.jpg') }}" alt="What is Fitraa" class="img-fluid rounded-3 shadow">
+                    @endif
                 </div>
                 <div class="col-lg-6">
                     <div class="ps-lg-5">
                         <h2 class="fw-bold mb-4">{{ $fitraa->what_is_title }}</h2>
                         <p class="lead text-muted">{{ $fitraa->what_is_content }}</p>
                         
-                        @if(!empty($fitraa->decoded_benefits))
+                        @php
+                            $benefits = !empty($fitraa->benefits) ? array_map('trim', explode(',', $fitraa->benefits)) : [];
+                            $benefits = array_slice($benefits, 0, 5); // Ensure only 5 points
+                        @endphp
+                        
+                        @if(!empty($benefits))
                         <div class="mt-4">
-                            @foreach($fitraa->decoded_benefits as $benefit)
+                            @foreach($benefits as $benefit)
                             <div class="d-flex mb-3">
                                 <div class="me-3">
                                     <div class="icon-box bg-primary bg-opacity-10 text-primary rounded-circle p-3">
-                                        <i class="fas fa-{{ $benefit['icon'] ?? 'check-circle' }}"></i>
+                                        <i class="fas fa-check-circle"></i>
                                     </div>
                                 </div>
                                 <div>
-                                    <h5 class="fw-bold mb-1">{{ $benefit['title'] ?? '' }}</h5>
-                                    <p class="text-muted mb-0">{{ $benefit['description'] ?? '' }}</p>
+                                    <p class="mb-0">{{ $benefit }}</p>
                                 </div>
                             </div>
                             @endforeach
@@ -64,20 +72,29 @@
                     <div class="donation-card p-4 p-lg-5 bg-white rounded-3 shadow-sm">
                         <div class="donation-amount mb-4">
                             <h4 class="mb-3">Donation</h4>
+                            <p class="text-muted">{{ $fitraa->donation_description }}</p>
                         </div>
 
                         <div class="qr-section my-5">
+                            @if($fitraa->qr_code_image)
                             <div class="qr-container p-3 bg-white d-inline-block rounded-3 shadow-sm">
-                                <img src="{{ $fitraa->qr_code_image ? asset('storage/' . $fitraa->qr_code_image) : asset('img/qr-code-placeholder.png') }}" alt="Payment QR Code" class="img-fluid" style="max-width: 200px;">
+                                <img src="{{ route('fitraa.files', $fitraa->qr_code_image) }}" alt="Payment QR Code" class="img-fluid" style="max-width: 200px;">
                             </div>
                             <p class="text-muted mt-3">Scan to donate via UPI</p>
+                            @else
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i> QR Code not available
+                            </div>
+                            @endif
                         </div>
 
                         <div class="donation-actions">
                             <button class="btn btn-primary btn-lg px-5 py-3" id="confirmDonation">
                                 <i class="fas fa-check-circle me-2"></i> I have donated
                             </button>
+                            @if($fitraa->donation_note)
                             <p class="text-muted small mt-3">{{ $fitraa->donation_note }}</p>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -86,11 +103,34 @@
     </section>
 </div>
 @else
-<div class="alert alert-warning text-center py-5 my-5">
-    <h4 class="mb-3">Fitraa Donation</h4>
-    <p class="mb-0">The Fitraa donation page is currently under maintenance. Please check back later.</p>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="alert alert-warning py-4">
+                <i class="fas fa-exclamation-triangle fa-3x mb-3 text-warning"></i>
+                <h3 class="mb-3">Fitraa Donation</h3>
+                <p class="lead mb-0">The Fitraa donation page is currently not available. Please check back later.</p>
+            </div>
+        </div>
+    </div>
 </div>
 @endif
+
+<style>
+    .alert-warning {
+        background-color: #fff3cd;
+        border-color: #ffeeba;
+        color: #856404;
+        border-radius: 0.5rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    }
+    .alert-warning i {
+        margin-bottom: 1rem;
+    }
+    main {
+        margin-top: 90px;
+    }
+</style>
 
 <style>
     :root {

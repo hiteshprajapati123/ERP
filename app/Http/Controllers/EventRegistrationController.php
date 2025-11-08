@@ -23,7 +23,7 @@ class EventRegistrationController extends Controller
             'address' => 'required|string',
             'city' => 'required|string|max:100',
             'state' => 'required|string|max:100',
-            'pincode' => 'required|string|max:10',
+            'pincode' => ['required', 'digits_between:2,10'],
         ]);
 
         $registration = new Registration($validated);

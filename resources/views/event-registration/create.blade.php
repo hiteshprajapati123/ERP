@@ -120,14 +120,16 @@
 
                                 <div class="col-md-4">
                                     <div class="form-floating">
-                                        <input type="text" class="form-control @error('pincode') is-invalid @enderror" 
+                                        <input type="tel" class="form-control @error('pincode') is-invalid @enderror" 
                                             id="pincode" name="pincode" 
                                             value="{{ old('pincode') }}" 
-                                            placeholder="Pincode" required>
-                                        <label for="pincode">Pincode <span class="text-danger">*</span></label>
+                                            placeholder="Pincode" required
+                                            inputmode="numeric" pattern="^[0-9]{4,10}$" minlength="4" maxlength="10"
+                                            oninput="this.value=this.value.replace(/[^0-9]/g,'')">
                                         @error('pincode')
-                                            <div class="invalid-feedback">{{ $message }}</div>
+                                            <div class="invalid-feedback d-block">{{ $message }}</div>
                                         @enderror
+                                        <label for="pincode">Pincode <span class="text-danger">*</span></label>
                                     </div>
                                 </div>
                             </div>

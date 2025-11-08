@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@php
+    use Illuminate\Support\Facades\Storage;
+@endphp
+
 @section('content')
 @if(isset($zakat) && $zakat->is_active)
 <div class="zakat-page">
@@ -23,28 +27,43 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6 mb-4 mb-lg-0">
-                    <img src="{{ $zakat->what_is_image ? asset('storage/' . $zakat->what_is_image) : 'https://img.freepik.com/free-vector/islamic-donation-concept-illustration_114360-1450.jpg' }}" alt="{{ $zakat->what_is_title }}" class="img-fluid rounded-3 shadow">
+                    @if($zakat->what_is_image)
+                        <img src="{{ route('zakat.files', $zakat->what_is_image) }}" alt="{{ $zakat->what_is_title }}" class="img-fluid rounded-3 shadow">
+                    @else
+                        <img src="https://img.freepik.com/free-vector/islamic-donation-concept-illustration_114360-1450.jpg" alt="{{ $zakat->what_is_title }}" class="img-fluid rounded-3 shadow">
+                    @endif
                 </div>
                 <div class="col-lg-6">
                     <div class="ps-lg-5">
                         <h2 class="fw-bold mb-4">{{ $zakat->what_is_title }}</h2>
                         <p class="lead text-muted">{{ $zakat->what_is_content }}</p>
                         
-                        @if(!empty($zakat->decoded_key_points))
+                        @if(!empty($zakat->key_points))
                         <div class="mt-4">
-                            @foreach($zakat->decoded_key_points as $point)
-                            <div class="d-flex mb-3">
-                                <div class="me-3">
-                                    <div class="icon-box bg-primary bg-opacity-10 text-primary rounded-circle p-3">
-                                        <i class="fas fa-{{ $point['icon'] ?? 'info-circle' }}"></i>
-                                    </div>
-                                </div>
-                                <div>
-                                    <h5 class="fw-bold mb-1">{{ $point['title'] ?? '' }}</h5>
-                                    <p class="text-muted mb-0">{{ $point['description'] ?? '' }}</p>
-                                </div>
-                            </div>
-                            @endforeach
+                            @php
+                                $points = is_array($zakat->key_points) 
+                                    ? $zakat->key_points 
+                                    : array_map('trim', explode(',', $zakat->key_points));
+                            @endphp
+                            
+                            <ul class="list-unstyled">
+                                @foreach($points as $point)
+                                    @if(trim($point))
+                                        <li class="mb-3">
+                                            <div class="d-flex">
+                                                <div class="me-3">
+                                                    <div class="icon-box bg-primary bg-opacity-10 text-primary rounded-circle p-2">
+                                                        <i class="fas fa-check"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <p class="mb-0">{{ $point }}</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    @endif
+                                @endforeach
+                            </ul>
                         </div>
                         @endif
                     </div>
@@ -64,7 +83,11 @@
                     <div class="donation-card p-4 p-lg-5 bg-white rounded-3 shadow-sm">
                         <div class="qr-section my-5">
                             <div class="qr-container p-3 bg-white d-inline-block rounded-3 shadow-sm">
-                                <img src="{{ $zakat->qr_code_image ? asset('storage/' . $zakat->qr_code_image) : asset('img/qr-code-placeholder.png') }}" alt="Payment QR Code" class="img-fluid" style="max-width: 200px;">
+                                @if($zakat->qr_code_image)
+                                <img src="{{ route('zakat.files', $zakat->qr_code_image) }}" alt="Payment QR Code" class="img-fluid" style="max-width: 200px;">
+                            @else
+                                <img src="{{ asset('img/qr-code-placeholder.png') }}" alt="Payment QR Code" class="img-fluid" style="max-width: 200px;">
+                            @endif
                             </div>
                             <p class="text-muted mt-3">Scan to pay your Zakat via UPI</p>
                         </div>
@@ -81,6 +104,19 @@
         </div>
     </section>
 </div>
+@else
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="alert alert-warning py-4">
+                <i class="fas fa-exclamation-triangle fa-3x mb-3 text-warning"></i>
+                <h3 class="mb-3">Zakat Donation</h3>
+                <p class="lead mb-0">The Zakat donation page is currently not available. Please check back later.</p>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
 
 <style>
     :root {
@@ -244,5 +280,4 @@
         }
     });
 </script>
-@endif
 @endsection

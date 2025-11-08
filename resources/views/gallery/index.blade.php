@@ -83,17 +83,40 @@
 document.addEventListener('DOMContentLoaded', function() {
     const loadMoreBtn = document.getElementById('load-more');
     const galleryGrid = document.querySelector('.gallery-grid');
+    const filterButtons = document.querySelectorAll('.filter-btn');
     let currentPage = 1;
     let isLoading = false;
     let hasMore = true;
-    const selectedCategory = 'all'; // Default category
+    let selectedCategory = 'all'; // slug
 
-    loadMoreBtn.addEventListener('click', loadMoreItems);
+    // Filter button clicks
+    filterButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const newCategory = btn.getAttribute('data-filter'); // slug or 'all'
+            if (newCategory === selectedCategory) return;
+
+            // Toggle active state
+            filterButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Reset state and grid
+            selectedCategory = newCategory;
+            currentPage = 1;
+            hasMore = true;
+            galleryGrid.innerHTML = '';
+            loadMoreBtn.style.display = 'inline-flex';
+
+            // Load first page for selected category
+            loadMoreItems(true);
+        });
+    });
+
+    loadMoreBtn.addEventListener('click', () => loadMoreItems(false));
 
     // Initial check for items
     checkIfMoreItems();
 
-    async function loadMoreItems() {
+    async function loadMoreItems(replacing = false) {
         if (isLoading || !hasMore) return;
         
         isLoading = true;
@@ -101,8 +124,8 @@ document.addEventListener('DOMContentLoaded', function() {
         loadMoreBtn.innerHTML = 'Loading...';
         
         try {
-            currentPage++;
-            const response = await fetch(`/gallery/items?page=${currentPage}&category=${selectedCategory}`);
+            const nextPage = replacing ? 1 : (currentPage + 1);
+            const response = await fetch(`/gallery/items?page=${nextPage}&category=${selectedCategory}`);
             const data = await response.json();
             
             if (data.items && data.items.length > 0) {
@@ -117,6 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 galleryGrid.appendChild(fragment);
                 
                 // Check if there are more items to load
+                currentPage = nextPage;
                 hasMore = data.current_page < data.last_page;
                 loadMoreBtn.style.display = hasMore ? 'inline-flex' : 'none';
             } else {
@@ -132,6 +156,11 @@ document.addEventListener('DOMContentLoaded', function() {
             loadMoreBtn.disabled = false;
             loadMoreBtn.innerHTML = 'Load More <i class="bi bi-arrow-down ms-2" style="transition: transform 0.3s ease;"></i>';
         }
+    }
+    
+    function checkIfMoreItems() {
+        // Trigger initial fetch for default category to decide button visibility
+        loadMoreItems(true);
     }
     
     function createGalleryItem(item) {

@@ -28,6 +28,8 @@ class ProfileController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'phone' => 'required|string|max:20|unique:users,phone,' . $user->id,
+            // roll_number is read-only via UI; block updates via request tampering
+            'roll_number' => 'nullable|prohibited',
             'father_name' => 'nullable|string|max:255',
             'mother_name' => 'nullable|string|max:255',
             'date_of_birth' => 'nullable|date',
@@ -39,6 +41,9 @@ class ProfileController extends Controller
             'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
+        // Ensure roll_number never gets mass-assigned
+        unset($validated['roll_number']);
+
         // Format date of birth if provided
         if (isset($validated['date_of_birth'])) {
             $validated['date_of_birth'] = date('Y-m-d', strtotime($validated['date_of_birth']));
@@ -47,7 +52,7 @@ class ProfileController extends Controller
         // Get the original user data before update
         $originalData = $user->getOriginal();
         $originalData = array_intersect_key($originalData, array_flip([
-            'name', 'email', 'phone', 'father_name', 'mother_name', 
+            'name', 'email', 'phone', 'roll_number', 'father_name', 'mother_name', 
             'date_of_birth', 'gender', 'address', 'city', 'state', 'pincode'
         ]));
 

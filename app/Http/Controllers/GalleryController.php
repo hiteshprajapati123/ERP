@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Gallery;
+use App\Models\GalleryCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Support\Facades\Log;
 
 class GalleryController extends Controller
@@ -13,19 +17,13 @@ class GalleryController extends Controller
      */
     public function index()
     {
-        // Get all unique categories from the gallery
-        $dbCategories = Gallery::select('category')
-            ->distinct()
-            ->whereNotNull('category')
-            ->where('category', '!=', '')
-            ->orderBy('category')
-            ->pluck('category')
-            ->mapWithKeys(function($category) {
-                return [strtolower($category) => ucfirst($category)];
-            })
-            ->toArray();
-            
-        $categories = array_merge(['all' => 'All'], $dbCategories);
+        // Load categories from gallery_categories table
+        $categories = GalleryCategory::orderBy('name')
+            ->get()
+            ->mapWithKeys(function ($cat) {
+                return [$cat->slug => $cat->name];
+            })->toArray();
+        $categories = array_merge(['all' => 'All'], $categories);
         
         // Get initial gallery items (first page) - only 4 items initially
         $galleryItems = Gallery::orderBy('is_featured', 'desc')
@@ -33,10 +31,11 @@ class GalleryController extends Controller
             ->take(4) // Initial load of 4 items
             ->get()
             ->map(function($item) {
+                $normalizedPath = $this->normalizePath($item->image_url);
                 return [
                     'id' => $item->id,
-                    'category' => $item->category,
-                    'image' => $item->image_url,
+                    'category' => optional($item->galleryCategory)->name ?? 'Uncategorized',
+                    'image' => $normalizedPath ? route('galleries.image', ['path' => $normalizedPath]) : null,
                     'alt' => $item->image_alt,
                     'title' => $item->title,
                     'description' => $item->description,
@@ -59,8 +58,14 @@ class GalleryController extends Controller
     {
         $galleryItems = Gallery::where('is_featured', true)
             ->orderBy('order')
-            ->take(4) // Show only 4 featured items on the welcome page
-            ->get();
+            ->take(4)
+            ->get()
+            ->map(function ($item) {
+                $item->image_url = $this->normalizePath($item->image_url)
+                    ? route('galleries.image', ['path' => $this->normalizePath($item->image_url)])
+                    : null;
+                return $item;
+            });
             
         return response()->json($galleryItems);
     }
@@ -70,15 +75,17 @@ class GalleryController extends Controller
      */
     public function getGalleryItems()
     {
-        $category = request()->input('category', 'all');
+        $category = request()->input('category', 'all'); // slug or 'all'
         $page = request()->input('page', 1);
         $perPage = 4; // Load 4 items at a time
         
-        $query = Gallery::query();
+        $query = Gallery::with('galleryCategory');
         
         // Filter by category if not 'all'
         if ($category !== 'all') {
-            $query->where('category', $category);
+            $query->whereHas('galleryCategory', function($q) use ($category) {
+                $q->where('slug', $category);
+            });
         }
         
         // Get total count for pagination
@@ -94,10 +101,11 @@ class GalleryController extends Controller
             ->take($perPage)
             ->get()
             ->map(function($item) {
+                $normalizedPath = $this->normalizePath($item->image_url);
                 return [
                     'id' => $item->id,
-                    'category' => $item->category,
-                    'image' => $item->image_url,
+                    'category' => optional($item->galleryCategory)->name ?? 'Uncategorized',
+                    'image' => $normalizedPath ? route('galleries.image', ['path' => $normalizedPath]) : null,
                     'alt' => $item->image_alt,
                     'title' => $item->title,
                     'description' => $item->description,
@@ -114,6 +122,36 @@ class GalleryController extends Controller
             'total' => $total,
             'per_page' => $perPage
         ]);
+    }
+
+    /**
+     * Securely stream a private gallery image.
+     */
+    public function image(string $path): StreamedResponse
+    {
+        $normalized = $this->normalizePath($path);
+        abort_unless($normalized && Str::startsWith($normalized, 'private/galleries/'), 404);
+
+        abort_unless(Storage::disk('local')->exists($normalized), 404);
+
+        $mime = Storage::disk('local')->mimeType($normalized) ?: 'application/octet-stream';
+        return Storage::disk('local')->response($normalized, headers: [
+            'Content-Type' => $mime,
+            'Cache-Control' => 'private, max-age=86400',
+        ]);
+    }
+
+    /**
+     * Normalize stored file path into 'private/galleries/...' form.
+     */
+    protected function normalizePath(?string $path): ?string
+    {
+        if (!$path) return null;
+        $path = str_replace('\\', '/', $path);
+        $path = preg_replace('#^/?storage/app/#', '', $path);
+        $path = preg_replace('#^/?app/#', '', $path);
+        $path = ltrim($path, '/');
+        return $path;
     }
 
     /**

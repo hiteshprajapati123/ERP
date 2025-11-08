@@ -485,7 +485,18 @@
                     @foreach($events as $event)
                         <article class="event-card">
                             <div class="event-image-container">
-                                <img src="{{ $event->image_url ?? 'https://source.unsplash.com/random/600x400?islamic,event' }}" 
+                                <img src="{{ $event->image_url
+                                    ? route('events.image', ['path' => (function ($p) {
+                                        $p = ltrim($p, '/');
+                                        foreach (['private/events/', 'events/', 'storage/app/private/events/', 'app/private/events/'] as $prefix) {
+                                            if (str_starts_with($p, $prefix)) {
+                                                $p = substr($p, strlen($prefix));
+                                                break;
+                                            }
+                                        }
+                                        return $p;
+                                    })($event->image_url)])
+                                    : 'https://source.unsplash.com/random/600x400?islamic,event' }}" 
                                     alt="{{ $event->title }}" 
                                     class="event-image">
                                 
@@ -520,7 +531,7 @@
                                 
                                 <div class="event-footer">
                                     <span class="event-category">
-                                        {{ $event->registration_required ? 'Registration Required' : 'Open to All' }}
+                                        {{ $event->registration_required ? 'Registration Open' : 'Registration Closed' }}
                                     </span>
                                     <a href="{{ route('events.show', $event->slug) }}" class="read-more">
                                         View Details <i class="fas fa-arrow-right"></i>

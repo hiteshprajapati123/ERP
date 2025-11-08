@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Sadqa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class SadqaController extends Controller
 {
@@ -12,9 +13,11 @@ class SadqaController extends Controller
      */
     public function index()
     {
-        $sadqa = Sadqa::where('is_active', true)
-            ->orWhere('is_active', 1)
-            ->firstOrFail();
+        $sadqa = Sadqa::first();
+        
+        if (!$sadqa || !$sadqa->is_active) {
+            return view('donation.sadqa', ['sadqa' => null]);
+        }
             
         return view('donation.sadqa', compact('sadqa'));
     }
@@ -67,5 +70,29 @@ class SadqaController extends Controller
 
         return redirect()->route('admin.sadqa.edit')
             ->with('success', 'Sadqa content updated successfully.');
+    }
+
+    /**
+     * Serve private files for Sadqa
+     */
+    public function serveFile($path = null)
+    {
+        try {
+            // Ensure the file exists in the private storage
+            if (!Storage::disk('private')->exists($path)) {
+                abort(404);
+            }
+
+            // Get the file
+            $file = Storage::disk('private')->get($path);
+            $mimeType = Storage::disk('private')->mimeType($path);
+            
+            // Return the file with appropriate headers
+            return response($file, 200)
+                ->header('Content-Type', $mimeType);
+                
+        } catch (\Exception $e) {
+            abort(404);
+        }
     }
 }

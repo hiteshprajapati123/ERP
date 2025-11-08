@@ -20,9 +20,9 @@ class PaperResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Front Pages';
+    protected static string|\UnitEnum|null $navigationGroup = 'Exam-paper/Result';
 
-    protected static ?string $navigationLabel = 'Exam-Pepar';
+    protected static ?string $navigationLabel = 'Exam-paper';
 
     protected static ?string $recordTitleAttribute = 'Paper';
 
@@ -38,12 +38,12 @@ class PaperResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return 'Exam-Pepar';
+        return 'Exam-paper';
     }
 
     public static function getPluralModelLabel(): string
     {
-        return 'Exam-Pepars';
+        return 'Exam-papers';
     }
 
     public static function getRelations(): array

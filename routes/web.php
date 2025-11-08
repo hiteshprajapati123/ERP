@@ -29,6 +29,21 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 // About Page Route
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 
+// Serve private Zakat files
+Route::get('/zakat/files/{path}', [ZakatController::class, 'serveFile'])
+    ->where('path', '.*')
+    ->name('zakat.files');
+
+// Serve private Fitraa files
+Route::get('/fitraa/files/{path}', [FitraaController::class, 'serveFile'])
+    ->where('path', '.*')
+    ->name('fitraa.files');
+
+// Serve private Sadqa files
+Route::get('/sadqa/files/{path}', [SadqaController::class, 'serveFile'])
+    ->where('path', '.*')
+    ->name('sadqa.files');
+
 // Gallery API Routes
 Route::get('/gallery/items', [GalleryController::class, 'getGalleryItems']);
 
@@ -36,6 +51,10 @@ Route::get('/gallery/items', [GalleryController::class, 'getGalleryItems']);
 Route::prefix('events')->group(function () {
     Route::get('/', [EventController::class, 'index'])->name('events.index');
     Route::get('/{event:slug}', [EventController::class, 'show'])->name('events.show');
+    // Serve private event images securely
+    Route::get('/image/{path}', [EventController::class, 'image'])
+        ->where('path', '.*')
+        ->name('events.image');
     
     // Event Registration Routes
     Route::get('/{event:title}/register', [EventRegistrationController::class, 'create'])
