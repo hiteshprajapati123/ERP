@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\User;
+use App\Models\Paper;
 
 class ExamResult extends Model
 {
@@ -18,6 +19,7 @@ class ExamResult extends Model
      */
     protected $fillable = [
         'user_id',
+        'paper_id',
         'exam_name',
         'date',
         'obtained_marks',
@@ -49,6 +51,14 @@ class ExamResult extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the paper associated with the exam result.
+     */
+    public function paper(): BelongsTo
+    {
+        return $this->belongsTo(Paper::class);
     }
 
     /**

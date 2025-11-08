@@ -109,6 +109,17 @@
                                 </div>
 
                                 <div class="col-md-6">
+                                    <label for="roll_number" class="form-label">Roll Number</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                        <input type="text" 
+                                               class="form-control @error('roll_number') is-invalid @enderror" 
+                                               id="roll_number" 
+                                               value="{{ auth()->user()->roll_number }}" readonly style="cursor: not-allowed; background-color: var(--bg-secondary);" aria-readonly="true">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
                                     <label for="date_of_birth" class="form-label">Date of Birth</label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>

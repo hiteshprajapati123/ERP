@@ -76,6 +76,10 @@
                             @endforeach
                         </div>
                     </div>
+                    <!-- Lightbox overlay -->
+                    <div id="imageLightbox" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.9); z-index:1055; align-items:center; justify-content:center; padding:20px;">
+                        <img id="lightboxImage" src="" alt="Preview" style="max-width:95%; max-height:95%; box-shadow:0 10px 30px rgba(0,0,0,.4); border-radius:8px;" />
+                    </div>
                     @endif
 
                     @if(isset($event['details']) && count($event['details']) > 0)
@@ -150,20 +154,12 @@
                     </div>
                     
                     @php
-                        $isRegistered = false;
-                        if (auth()->check() && isset($event['id'])) {
-                            $isRegistered = \App\Models\Event::find($event['id'])->isRegistered(auth()->id());
-                        }
-                        $isFull = isset($event['max_attendees']) && $event['registrations_count'] >= $event['max_attendees'];
+                        $registrationRequired = isset($event['registration_required']) ? (bool) $event['registration_required'] : true;
                     @endphp
 
-                    @if($isRegistered)
-                        <button class="btn btn-secondary w-100" style="border: none; padding: 12px; font-weight: 600; font-size: 16px; border-radius: 8px; margin-bottom: 20px;" disabled>
-                            <i class="fas fa-check-circle me-2"></i> Already Registered
-                        </button>
-                    @elseif($isFull)
+                    @if(!$registrationRequired)
                         <button class="btn btn-danger w-100" style="border: none; padding: 12px; font-weight: 600; font-size: 16px; border-radius: 8px; margin-bottom: 20px;" disabled>
-                            <i class="fas fa-times-circle me-2"></i> Event Full
+                            <i class="fas fa-lock me-2"></i> Registration Closed
                         </button>
                     @else
                         <a href="{{ route('event.registration.create', $event['title']) }}" 
@@ -173,8 +169,8 @@
                            onmouseout="this.style.backgroundColor='#1A5D3B'">
                             <i class="fas fa-user-plus me-2"></i> Register Now
                         </a>
-
                     @endif
+
                     <div id="registrationMessage" class="mt-2"></div>
                     
                     <div style="font-size: 13px; color: #718096; text-align: center;">
@@ -392,6 +388,31 @@
         
         // Check on scroll
         window.addEventListener('scroll', animateOnScroll);
+
+        // Simple lightbox behaviour
+        const lb = document.getElementById('imageLightbox');
+        const lbImg = document.getElementById('lightboxImage');
+        if (lb && lbImg) {
+            document.querySelectorAll('[data-lightbox="event-gallery"]').forEach(a => {
+                a.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    lbImg.src = a.getAttribute('href');
+                    lb.style.display = 'flex';
+                });
+            });
+            // Close on overlay click
+            lb.addEventListener('click', () => {
+                lb.style.display = 'none';
+                lbImg.src = '';
+            });
+            // Close on Esc
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && lb.style.display !== 'none') {
+                    lb.style.display = 'none';
+                    lbImg.src = '';
+                }
+            });
+        }
     });
 </script>
 @endsection

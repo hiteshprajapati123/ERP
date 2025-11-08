@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Zakat;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ZakatController extends Controller
 {
@@ -12,9 +13,11 @@ class ZakatController extends Controller
      */
     public function index()
     {
-        $zakat = Zakat::where('is_active', true)
-            ->orWhere('is_active', 1)
-            ->firstOrFail();
+       $zakat = Zakat::first();
+        
+        if (!$zakat || !$zakat->is_active) {
+            return view('donation.zakat', ['zakat' => null]);
+        }
             
         return view('donation.zakat', compact('zakat'));
     }
@@ -69,5 +72,29 @@ class ZakatController extends Controller
 
         return redirect()->route('admin.zakat.edit')
             ->with('success', 'Zakat content updated successfully.');
+    }
+
+    /**
+     * Serve private files for Zakat
+     */
+    public function serveFile($path = null)
+    {
+        try {
+            // Ensure the file exists in the private storage
+            if (!Storage::disk('private')->exists($path)) {
+                abort(404);
+            }
+
+            // Get the file
+            $file = Storage::disk('private')->get($path);
+            $mimeType = Storage::disk('private')->mimeType($path);
+            
+            // Return the file with appropriate headers
+            return response($file, 200)
+                ->header('Content-Type', $mimeType);
+                
+        } catch (\Exception $e) {
+            abort(404);
+        }
     }
 }

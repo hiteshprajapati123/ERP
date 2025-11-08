@@ -48,6 +48,14 @@
                                 <i class="far fa-calendar-alt me-1"></i> 
                                 {{ $examDate }}
                             </p>
+                            @if(!empty($result['paper']))
+                                <p class="text-muted mb-3">
+                                    <i class="fas fa-file-alt me-1"></i>
+                                    <span class="fw-medium">Paper:</span>
+                                    {{ $result['paper']['title'] }}
+                                    ({{ $result['paper']['subject'] }} - {{ $result['paper']['term'] }} {{ $result['paper']['year'] }})
+                                </p>
+                            @endif
                             
                             <div class="row align-items-center">
                                 <div class="col-md-6 mb-3 mb-md-0">

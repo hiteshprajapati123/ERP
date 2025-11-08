@@ -14,7 +14,8 @@ class ExamResultController extends Controller
     public function index()
     {
         // Get all results for the authenticated user, ordered by date (newest first)
-        $results = ExamResult::where('user_id', Auth::id())
+        $results = ExamResult::with('paper')
+            ->where('user_id', Auth::id())
             ->orderBy('date', 'desc')
             ->paginate(5) // Show 5 results per page
             ->appends(request()->query()); // Keep any query parameters when paginating
@@ -29,6 +30,13 @@ class ExamResultController extends Controller
                 'total_marks' => $result->total_marks,
                 'grade' => $result->grade,
                 'percentage' => $result->percentage,
+                'paper' => $result->paper ? [
+                    'id' => $result->paper->id,
+                    'title' => $result->paper->title,
+                    'subject' => $result->paper->subject,
+                    'year' => $result->paper->year,
+                    'term' => $result->paper->term,
+                ] : null,
             ];
         });
 
@@ -56,7 +64,7 @@ class ExamResultController extends Controller
      */
     public function summary()
     {
-        $results = ExamResult::select('exam_name', DB::raw('AVG(marks) as average_marks'))
+        $results = ExamResult::select('exam_name', DB::raw('AVG(obtained_marks) as average_marks'))
             ->where('user_id', Auth::id())
             ->groupBy('exam_name')
             ->get();

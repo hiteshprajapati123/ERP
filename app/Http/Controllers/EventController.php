@@ -64,7 +64,26 @@ class EventController extends Controller
     {
         $event = Event::where('slug', $slug)->firstOrFail();
         
+        $registrationsCount = \App\Models\Registration::where('event_id', $event->id)->count();
+
         // Format event data for the view
+        $rawPath = $event->image_url ? ltrim($event->image_url, '/') : null;
+        if ($rawPath) {
+            // Normalize to just the filename relative to private/events
+            $patterns = [
+                'private/events/',
+                'events/',
+                'storage/app/private/events/',
+                'app/private/events/',
+            ];
+            foreach ($patterns as $prefix) {
+                if (str_starts_with($rawPath, $prefix)) {
+                    $rawPath = substr($rawPath, strlen($prefix));
+                    break;
+                }
+            }
+            // If path still contains directories, keep as relative under private/events
+        }
         $formattedEvent = [
             'title' => $event->title,
             'description' => $event->description,
@@ -73,8 +92,8 @@ class EventController extends Controller
             'end_time' => $event->end_time ? $event->end_time->format('h:i A') : null,
             'location' => $event->location,
             'address' => $event->address,
-            'image' => $event->image_url,
-            'images' => $event->image_url ? [$event->image_url] : [],
+            'image' => $rawPath ? route('events.image', ['path' => $rawPath]) : null,
+            'images' => $rawPath ? [route('events.image', ['path' => $rawPath])] : [],
             'category' => $event->is_featured ? 'Featured Event' : 'Event',
             'details' => [
                 'Event will start at ' . ($event->start_time ? $event->start_time->format('h:i A') : 'TBD'),
@@ -84,7 +103,10 @@ class EventController extends Controller
                 $event->registration_required ? 'Registration is required' : 'Open to all',
                 $event->max_attendees ? 'Maximum attendees: ' . $event->max_attendees : ''
             ],
-            'contact_person' => 'Event Organizer', // You can add these fields to your events table
+            'registration_required' => (bool) $event->registration_required,
+            'max_attendees' => $event->max_attendees,
+            'registrations_count' => $registrationsCount,
+            'contact_person' => 'Event Organizer',
             'contact_email' => 'info@example.com',
             'contact_phone' => '+1 234 567 8900',
             'registration_link' => $event->registration_required ? '#' : null
@@ -108,6 +130,26 @@ class EventController extends Controller
         return view('events.details', [
             'event' => $formattedEvent,
             'relatedEvents' => $relatedEvents
+        ]);
+    }
+
+    /**
+     * Serve private-stored event images securely.
+     */
+    public function image(string $path)
+    {
+        $fullPath = 'private/events/' . ltrim($path, '/');
+        if (!Storage::disk('local')->exists($fullPath)) {
+            abort(404);
+        }
+
+        $mime = Storage::disk('local')->mimeType($fullPath) ?: 'image/jpeg';
+        $stream = Storage::disk('local')->readStream($fullPath);
+        return response()->stream(function () use ($stream) {
+            fpassthru($stream);
+        }, 200, [
+            'Content-Type' => $mime,
+            'Cache-Control' => 'public, max-age=604800',
         ]);
     }
 

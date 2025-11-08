@@ -33,8 +33,8 @@ class ExamResultPolicy
      */
     public function create(User $user): bool
     {
-        // No one can create exam results through the web interface
-        return false;
+        // Allow creating exam results (adjust with roles/permissions as needed)
+        return true;
     }
 
     /**
@@ -43,7 +43,7 @@ class ExamResultPolicy
     public function update(User $user, ExamResult $examResult): bool
     {
         // No one can update exam results through the web interface
-        return false;
+        return true;
     }
 
     /**
@@ -52,7 +52,7 @@ class ExamResultPolicy
     public function delete(User $user, ExamResult $examResult): bool
     {
         // No one can delete exam results through the web interface
-        return false;
+        return true;
     }
 
     /**

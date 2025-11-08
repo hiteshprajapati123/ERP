@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Filament\Resources\GalleryCategories\Schemas;
+
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Schema;
+use Illuminate\Support\Str;
+
+class GalleryCategoryForm
+{
+    public static function configure(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                TextInput::make('name')
+                    ->required()
+                    ->live(debounce: 500)
+                    ->afterStateUpdated(function ($get, $set, $state) {
+                        $set('slug', Str::slug($state));
+                    }),
+                TextInput::make('slug')
+                    ->unique('gallery_categories', 'slug', ignoreRecord: true)
+                    ->dehydrated()
+                    ->readOnly()
+                    ->disabled()
+            ]);
+    }
+}

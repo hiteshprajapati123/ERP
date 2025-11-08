@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@php
+    use Illuminate\Support\Facades\Storage;
+@endphp
+
 @section('content')
 @if(isset($sadqa) && $sadqa->is_active)
 <div class="sadqa-page">
@@ -9,7 +13,7 @@
             <div class="row justify-content-center">
                 <div class="col-lg-8">
                     <div class="hero-content">
-                        <i class="fas fa-heart display-3 mb-4"></i>
+                        <i class="fas fa-hands-helping display-3 mb-4"></i>
                         <h1 class="display-5 fw-bold mb-3">{{ $sadqa->hero_title }}</h1>
                         <p class="lead">{{ $sadqa->hero_quote }}</p>
                     </div>
@@ -18,30 +22,38 @@
         </div>
     </section>
 
-    <!-- What is Sadaqah Section -->
+    <!-- What is Sadqa Section -->
     <section class="py-5">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6 mb-4 mb-lg-0">
-                    <img src="{{ $sadqa->what_is_image ? asset('storage/' . $sadqa->what_is_image) : 'https://img.freepik.com/free-vector/charity-donation-concept-illustration_114360-1444.jpg' }}" alt="{{ $sadqa->what_is_title }}" class="img-fluid rounded-3 shadow">
+                    @if($sadqa->what_is_image)
+                        <img src="{{ route('sadqa.files', $sadqa->what_is_image) }}" alt="{{ $sadqa->what_is_title }}" class="img-fluid rounded-3 shadow">
+                    @else
+                        <img src="https://img.freepik.com/free-vector/charity-donation-concept-illustration_114360-1444.jpg" alt="{{ $sadqa->what_is_title }}" class="img-fluid rounded-3 shadow">
+                    @endif
                 </div>
                 <div class="col-lg-6">
                     <div class="ps-lg-5">
                         <h2 class="fw-bold mb-4">{{ $sadqa->what_is_title }}</h2>
                         <p class="lead text-muted">{{ $sadqa->what_is_content }}</p>
                         
-                        @if(!empty($sadqa->decoded_benefits))
+                        @php
+                            $benefits = !empty($sadqa->benefits) ? array_map('trim', explode(',', $sadqa->benefits)) : [];
+                            $benefits = array_slice($benefits, 0, 5); // Ensure only 5 points
+                        @endphp
+                        
+                        @if(!empty($benefits))
                         <div class="mt-4">
-                            @foreach($sadqa->decoded_benefits as $benefit)
+                            @foreach($benefits as $benefit)
                             <div class="d-flex mb-3">
                                 <div class="me-3">
                                     <div class="icon-box bg-primary bg-opacity-10 text-primary rounded-circle p-3">
-                                        <i class="fas fa-{{ $benefit['icon'] ?? 'heart' }}"></i>
+                                        <i class="fas fa-check-circle"></i>
                                     </div>
                                 </div>
                                 <div>
-                                    <h5 class="fw-bold mb-1">{{ $benefit['title'] ?? '' }}</h5>
-                                    <p class="text-muted mb-0">{{ $benefit['description'] ?? '' }}</p>
+                                    <p class="mb-0">{{ $benefit }}</p>
                                 </div>
                             </div>
                             @endforeach
@@ -63,17 +75,26 @@
                     
                     <div class="donation-card p-4 p-lg-5 bg-white rounded-3 shadow-sm">
                         <div class="qr-section my-5">
+                            @if($sadqa->qr_code_image)
                             <div class="qr-container p-3 bg-white d-inline-block rounded-3 shadow-sm">
-                                <img src="{{ $sadqa->qr_code_image ? asset('storage/' . $sadqa->qr_code_image) : asset('img/qr-code-placeholder.png') }}" alt="Payment QR Code" class="img-fluid" style="max-width: 200px;">
+                                <img src="{{ route('sadqa.files', $sadqa->qr_code_image) }}" alt="Payment QR Code" class="img-fluid" style="max-width: 200px;">
                             </div>
                             <p class="text-muted mt-3">Scan to donate via UPI</p>
+                            @else
+                            <div class="alert alert-warning text-center py-5 my-5">
+                                <h4 class="mb-3">Sadqa Donation</h4>
+                                <p class="mb-0">The Sadqa donation page is currently not available. Please check back later.</p>
+                            </div>
+                            @endif
                         </div>
 
                         <div class="donation-actions">
                             <button class="btn btn-primary btn-lg px-5 py-3" id="confirmDonation">
                                 <i class="fas fa-check-circle me-2"></i> I have donated
                             </button>
+                            @if($sadqa->donation_note)
                             <p class="text-muted small mt-3">{{ $sadqa->donation_note }}</p>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -115,6 +136,33 @@
         align-items: center;
         justify-content: center;
         transition: all 0.3s ease;
+    }
+    
+    .donation-card {
+        border: 1px solid rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .donation-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+    }
+    
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    .btn-primary:hover,
+    .btn-primary:active,
+    .btn-primary:focus {
+        background-color: #2980b9;
+        border-color: #2980b9;
+    }
+    
+    .qr-container img {
+        max-width: 200px;
+        height: auto;
     }
     
     .donation-card {
@@ -213,5 +261,35 @@
         }
     });
 </script>
+@else
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="alert alert-warning py-4">
+                <i class="fas fa-exclamation-triangle fa-3x mb-3 text-warning"></i>
+                <h3 class="mb-3">Sadqa Donation</h3>
+                <p class="lead mb-0">The Sadqa donation page is currently not available. Please check back later.</p>
+            </div>
+        </div>
+    </div>
+</div>
 @endif
+
+<style>
+    .alert-warning {
+        background-color: #fff3cd;
+        border-color: #ffeeba;
+        color: #856404;
+        border-radius: 0.5rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    }
+    .alert-warning i {
+        margin-bottom: 1rem;
+    }
+
+    main{
+        margin-top: 90px;
+    }
+</style>
+
 @endsection

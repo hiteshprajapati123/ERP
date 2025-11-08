@@ -7,9 +7,12 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Actions\Action;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
+use App\Models\NoticeCategory;
+use Illuminate\Support\Str;
 
 class NoticeForm
 {
@@ -27,7 +30,26 @@ class NoticeForm
                     ->relationship('category', 'name')
                     ->searchable()
                     ->preload()
-                    ->required(),
+                    ->required()
+                    ->suffixAction(
+                        Action::make('createCategory')
+                            ->icon('heroicon-o-plus')
+                            ->form([
+                                TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255)
+                            ])
+                            ->action(function (array $data) {
+                                return NoticeCategory::create([
+                                    'name' => $data['name'],
+                                    'slug' => Str::slug($data['name']),
+                                    'is_active' => true,
+                                ]);
+                            })
+                            ->modalHeading('Create New Category')
+                            ->modalSubmitActionLabel('Create')
+                            ->modalWidth('md')
+                    ),
                 DatePicker::make('notice_date')
                     ->required(),
                 DatePicker::make('expiry_date'),

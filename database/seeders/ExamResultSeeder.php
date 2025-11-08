@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\ExamResult;
 use App\Models\User;
+use App\Models\Paper;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
@@ -17,9 +18,15 @@ class ExamResultSeeder extends Seeder
         $users = User::take(5)->get();
         $examNames = ['Mid Term', 'Final Term', 'Quiz 1', 'Quiz 2', 'Assignment'];
         $subjects = ['Mathematics', 'Science', 'English', 'History', 'Computer Science'];
+        $papers = Paper::all();
         
         if ($users->isEmpty()) {
             $this->command->info('No users found. Please run UserSeeder first.');
+            return;
+        }
+
+        if ($papers->isEmpty()) {
+            $this->command->info('No papers found. Please seed papers first.');
             return;
         }
 
@@ -35,9 +42,11 @@ class ExamResultSeeder extends Seeder
                     // Calculate percentage and grade
                     $percentage = ($obtainedMarks / $totalMarks) * 100;
                     $grade = ExamResult::calculateGrade($percentage);
+                    $paper = $papers->random();
                     
                     ExamResult::create([
                         'user_id' => $user->id,
+                        'paper_id' => $paper->id,
                         'exam_name' => "$exam - $subject",
                         'date' => Carbon::now()->subDays(rand(1, 30)),
                         'obtained_marks' => $obtainedMarks,

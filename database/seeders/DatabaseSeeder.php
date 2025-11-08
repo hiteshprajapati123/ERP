@@ -40,6 +40,7 @@ class DatabaseSeeder extends Seeder
             ZakatSeeder::class,
             FitraaSeeder::class,
             GallerySeeder::class,
+            GalleryCategorySeeder::class,
             PaperSeeder::class,
             AttendanceSeeder::class,
             ExamResultSeeder::class,
