@@ -90,19 +90,19 @@ This Enterprise Resource Planning (ERP) system is a modern, full-featured web ap
 <div align="center">
   <h3>Application Interface</h3>
   <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin: 20px 0;">
-    <img src="/readme_img/Screenshot from 2025-11-11 19-19-41.png" alt="Dashboard Overview" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-    <img src="/readme_img/Screenshot from 2025-11-11 19-19-57.png" alt="User Management" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-    <img src="/readme_img/Screenshot from 2025-11-11 19-20-05.png" alt="Event Management" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-    <img src="/readme_img/Screenshot from 2025-11-11 19-20-26.png" alt="Gallery View" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-    <img src="/readme_img/Screenshot from 2025-11-11 19-20-30.png" alt="Financial Dashboard" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-    <img src="/readme_img/Screenshot from 2025-11-11 19-20-34.png" alt="Content Management" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <img src="public/readme_img/Screenshot from 2025-11-11 19-19-41.png" alt="Dashboard Overview" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <img src="public/readme_img/Screenshot from 2025-11-11 19-19-57.png" alt="User Management" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <img src="public/readme_img/Screenshot from 2025-11-11 19-20-05.png" alt="Event Management" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <img src="public/readme_img/Screenshot from 2025-11-11 19-20-26.png" alt="Gallery View" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <img src="public/readme_img/Screenshot from 2025-11-11 19-20-30.png" alt="Financial Dashboard" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <img src="public/readme_img/Screenshot from 2025-11-11 19-20-34.png" alt="Content Management" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
   </div>
   <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin: 20px 0;">
-    <img src="/readme_img/Screenshot from 2025-11-11 19-20-55.png" alt="Admin Panel" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-    <img src="/readme_img/Screenshot from 2025-11-11 19-21-02.png" alt="User Profile" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-    <img src="/readme_img/Screenshot from 2025-11-11 19-21-11.png" alt="Settings" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-    <img src="/readme_img/Screenshot from 2025-11-11 19-21-23.png" alt="Mobile View" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-    <img src="/readme_img/Screenshot from 2025-11-11 19-21-35.png" alt="Responsive Design" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <img src="public/readme_img/Screenshot from 2025-11-11 19-20-55.png" alt="Admin Panel" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <img src="public/readme_img/Screenshot from 2025-11-11 19-21-02.png" alt="User Profile" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <img src="public/readme_img/Screenshot from 2025-11-11 19-21-11.png" alt="Settings" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <img src="public/readme_img/Screenshot from 2025-11-11 19-21-23.png" alt="Mobile View" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <img src="public/readme_img/Screenshot from 2025-11-11 19-21-35.png" alt="Responsive Design" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
   </div>
 </div>
 
