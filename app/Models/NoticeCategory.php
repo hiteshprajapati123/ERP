@@ -20,8 +20,8 @@ class NoticeCategory extends Model
         'is_active' => 'boolean',
     ];
 
-    public function notices()
+    public function userNotices()
     {
-        return $this->hasMany(Notice::class, 'category_id');
+        return $this->hasMany(UserNotice::class, 'notice_category_id');
     }
 }

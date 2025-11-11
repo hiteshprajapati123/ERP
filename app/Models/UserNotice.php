@@ -4,11 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UserNotice extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     /**
      * The attributes that are mass assignable.
@@ -32,6 +31,7 @@ class UserNotice extends Model
         'is_important',
         'is_published',
         'created_by',
+        'notice_category_id',
     ];
 
     /**
@@ -53,6 +53,14 @@ class UserNotice extends Model
     public function author()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Get the notice category.
+     */
+    public function noticeCategory()
+    {
+        return $this->belongsTo(NoticeCategory::class, 'notice_category_id');
     }
 
     /**
@@ -125,21 +133,20 @@ class UserNotice extends Model
     }
     
     /**
-     * Get all distinct notice types from the database
+     * Get all active notice categories
      *
      * @return \Illuminate\Support\Collection
      */
     public static function getNoticeTypes()
     {
-        return static::select('type')
-            ->distinct()
-            ->whereNotNull('type')
-            ->pluck('type')
-            ->mapWithKeys(function ($type) {
+        return \App\Models\NoticeCategory::where('is_active', true)
+            ->orderBy('name')
+            ->get()
+            ->mapWithKeys(function ($category) {
                 return [
-                    $type => [
-                        'name' => ucfirst($type),
-                        'color' => (new static(['type' => $type]))->type_color
+                    $category->id => [
+                        'name' => $category->name,
+                        'color' => '#4e73df' // Consistent blue color for all categories
                     ]
                 ];
             });

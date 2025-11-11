@@ -29,7 +29,7 @@ class FeePolicy
      */
     public function create(User $user): bool
     {
-        return false; // Users cannot create fee records
+        return true; // Users cannot create fee records
     }
 
     /**
@@ -37,7 +37,7 @@ class FeePolicy
      */
     public function update(User $user, Fee $fee): bool
     {
-        return false; // Users cannot update fee records
+        return true; // Users cannot update fee records
     }
 
     /**
@@ -45,7 +45,7 @@ class FeePolicy
      */
     public function delete(User $user, Fee $fee): bool
     {
-        return false; // Users cannot delete fee records
+        return true; // Users cannot delete fee records
     }
 
     /**

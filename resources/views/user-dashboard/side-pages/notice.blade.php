@@ -53,11 +53,11 @@
                     <h5 class="mb-2 mb-md-0">Notice Board</h5>
                     <div class="mt-2 mt-md-0">
                         <form action="{{ route('user.notices.index') }}" method="GET" id="noticeFilterForm" class="d-flex">
-                            <select name="type" class="form-select form-select-sm me-2" onchange="updateFilter(this)">
-                                <option value="">All Notices</option>
-                                @foreach($noticeTypes as $type => $details)
-                                    <option value="{{ $type }}" {{ request('type') == $type ? 'selected' : '' }}>
-                                        {{ $details['name'] }}
+                            <select name="category" class="form-select form-select-sm me-2" onchange="updateFilter(this)">
+                                <option value="">All Categories</option>
+                                @foreach($noticeCategories as $category)
+                                    <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
+                                        {{ $category->name }}
                                     </option>
                                 @endforeach
                             </select>
@@ -70,14 +70,14 @@
                             const form = document.getElementById('noticeFilterForm');
                             const url = new URL(form.action);
                             
-                            // Remove the type parameter if 'All' is selected
+                            // Remove the category parameter if 'All Categories' is selected
                             if (select.value === '') {
-                                url.searchParams.delete('type');
+                                url.searchParams.delete('category');
                                 window.location.href = url.toString();
                                 return;
                             }
                             
-                            // Otherwise, submit the form with the selected type
+                            // Otherwise, submit the form with the selected category
                             form.submit();
                         }
                     </script>
@@ -100,7 +100,7 @@
                         </div>
 
                         <div class="mt-4">
-                            {{ $notices->appends(request()->query())->links() }}
+                            {{ $notices->appends(request()->query())->links('vendor.pagination.custom') }}
                         </div>
                     @else
                         <div class="text-center py-5">

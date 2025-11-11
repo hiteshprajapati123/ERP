@@ -642,7 +642,7 @@
                             <div class="event-footer">
                                 <span class="event-tag">
                                     <i class="fas {{ $event->registration_required ? 'fa-user-plus' : 'fa-door-open' }}"></i>
-                                    {{ $event->registration_required ? 'Registration' : 'Open to All' }}
+                                    {{ $event->registration_required ? 'Registration Open' : 'Registration Closed' }}
                                 </span>
                                 <a href="{{ route('events.show', $event->slug) }}" class="event-link">
                                     View Details

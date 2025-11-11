@@ -616,11 +616,6 @@
                         <div class="text-light mb-4">
                             {!! $aboutSection->content !!}
                         </div>
-                    @else
-                        <p class="text-light mb-4">
-                            Our mission is to provide quality education and guidance. <br><br> 
-                            📖 “Acquire knowledge and impart it to the people.” — Prophet Muhammad ﷺ
-                        </p>
                     @endif
                     @php
                         $socialLinks = \App\Models\SocialLink::getActiveLinks();
@@ -677,13 +672,6 @@
                                     <span>{{ $contactSection->address }}</span>
                                 </div>
                             </li>
-                        @else
-                            <li class="mb-3">
-                                <div class="d-flex">
-                                    <span class="me-3 mt-1"><i class="bi bi-geo-alt-fill text-primary"></i></span>
-                                    <span>masjid, Pargahi Bangar, Kalyanpur, Naramau, Kanpur, Uttar Pradesh 209217</span>
-                                </div>
-                            </li>
                         @endif
 
                         @if($contactSection && $contactSection->phone)
@@ -693,13 +681,6 @@
                                     <span>{{ $contactSection->phone }}</span>
                                 </div>
                             </li>
-                        @else
-                            <li class="mb-3">
-                                <div class="d-flex">
-                                    <span class="me-3 mt-1"><i class="bi bi-telephone-fill text-primary"></i></span>
-                                    <span>+91 87390 90638</span>
-                                </div>
-                            </li>
                         @endif
 
                         @if($contactSection && $contactSection->email)
@@ -707,13 +688,6 @@
                                 <div class="d-flex">
                                     <span class="me-3 mt-1"><i class="bi bi-envelope-fill text-primary"></i></span>
                                     <span>{{ $contactSection->email }}</span>
-                                </div>
-                            </li>
-                        @else
-                            <li class="mb-3">
-                                <div class="d-flex">
-                                    <span class="me-3 mt-1"><i class="bi bi-envelope-fill text-primary"></i></span>
-                                    <span>info@madarsa.com</span>
                                 </div>
                             </li>
                         @endif

@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
             GallerySeeder::class,
             GalleryCategorySeeder::class,
             PaperSeeder::class,
-            AttendanceSeeder::class,
+            // AttendanceSeeder::class,
             ExamResultSeeder::class,
             UserNoticeSeeder::class,
         ]);

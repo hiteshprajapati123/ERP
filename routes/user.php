@@ -39,6 +39,9 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
         Route::get('/', [UserNoticeController::class, 'index'])->name('index');
         Route::get('{notice:slug}', [UserNoticeController::class, 'show'])->name('show');
         Route::get('{notice}/download', [UserNoticeController::class, 'download'])->name('download');
+        Route::get('image/{path}', [UserNoticeController::class, 'serveImage'])
+            ->where('path', '.*')
+            ->name('image');
     });
     
     // Exam Results
