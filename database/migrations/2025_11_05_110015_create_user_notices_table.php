@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->enum('type', ['general', 'academic', 'exam', 'event', 'alert'])->default('general');
             $table->string('slug')->unique();
             $table->text('content');
             $table->string('image_path')->nullable();
@@ -30,7 +29,6 @@ return new class extends Migration
             $table->boolean('is_published')->default(true);
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

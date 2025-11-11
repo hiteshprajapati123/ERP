@@ -18,29 +18,21 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         $currentDate = now();
-        $startOfMonth = now()->startOfMonth();
         
-        // Get all attendance records for current month
-        $attendanceRecords = Attendance::where('user_id', $user->id)
-            ->whereBetween('date', [$startOfMonth, $currentDate])
-            ->get();
-            
-        // Get holidays and present days
-        $holidays = $attendanceRecords->where('status', 'holiday')->pluck('date');
-        $presentDays = $attendanceRecords->where('status', 'present')->count();
+        // Get attendance statistics using AttendanceController
+        $attendanceController = new \App\Http\Controllers\AttendanceController();
+        $attendanceStats = $attendanceController->calculateAttendanceStats(
+            $user->id,
+            $currentDate->month,
+            $currentDate->year
+        );
         
-        // Calculate working days up to today (excluding weekends and holidays)
-        $workingDaysCount = 0;
-        
-        for ($date = $startOfMonth->copy(); $date->lte($currentDate); $date->addDay()) {
-            $dateStr = $date->format('Y-m-d');
-            if (!$date->isWeekend() && !$holidays->contains($dateStr)) {
-                $workingDaysCount++;
-            }
-        }
-        
-        // Calculate attendance percentage
-        $attendancePercentage = $workingDaysCount > 0 ? round(($presentDays / $workingDaysCount) * 100, 1) : 0;
+        // Extract the stats
+        $presentCount = $attendanceStats['present'];
+        $absentCount = $attendanceStats['absent'];
+        $workingDaysCount = $attendanceStats['working_days_so_far'];
+        $totalWorkingDays = $attendanceStats['total_working_days'];
+        $attendancePercentage = $attendanceStats['attendance_percentage'];
         
         // Prepare data for the view
         // Get fees data matching fees page implementation
@@ -72,9 +64,10 @@ class DashboardController extends Controller
             
         $stats = [
             'attendance_percentage' => $attendancePercentage,
-            'present_days' => $presentDays,
+            'present_days' => $presentCount,
+            'absent_days' => $absentCount,
             'working_days' => $workingDaysCount,
-            'total_days' => $currentDate->daysInMonth,
+            'total_working_days' => $totalWorkingDays,
             'pending_fees' => $pendingAmount, // Only pending fees with status 'pending'
             'pending_count' => $pendingCount, // Number of pending installments
             'total_fees' => $totalFees,

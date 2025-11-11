@@ -28,26 +28,33 @@
                             <i class="mdi mdi-chart-arc text-info" style="font-size: 1.5rem;"></i>
                         </div>
                         <div class="text-end">
-                            <span class="text-muted small">OverAll</span>
+                            <span class="text-muted small">Monthly Attendance</span>
                             <h3 class="mb-0 text-dark">{{ number_format($stats['attendance_percentage'] ?? 0, 1) }}%</h3>
                         </div>
                     </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-muted small">
-                            <i class="fas fa-calendar-check text-success me-1"></i>
-                            {{ $stats['present_days'] ?? 0 }} of {{ $stats['working_days'] ?? 0 }} days
-                        </span>
-                        <a href="{{ route('user.attendance.index') }}" class="btn btn-sm btn-link text-decoration-none p-0">
-                            View Details <i class="fas fa-arrow-right ms-1"></i>
-                        </a>
+                    <div class="attendance-stats">
+                        <div class="d-flex justify-content-between text-muted small mb-1">
+                            <span><i class="fas fa-calendar-check text-success me-1"></i> Present</span>
+                            <span>{{ $stats['present_days'] ?? 0 }} days</span>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted small mb-1">
+                            <span><i class="fas fa-calendar-times text-danger me-1"></i> Absent</span>
+                            <span>{{ $stats['absent_days'] ?? 0 }} days</span>
+                        </div>
                     </div>
-                    <div class="progress mt-2" style="height: 4px;">
-                        <div class="progress-bar bg-info" role="progressbar" 
+                    <div class="progress mt-2" style="height: 6px;">
+                        <div class="progress-bar bg-{{ $stats['attendance_percentage'] >= 75 ? 'success' : ($stats['attendance_percentage'] >= 50 ? 'info' : 'danger') }}" 
+                             role="progressbar" 
                              style="width: {{ $stats['attendance_percentage'] ?? 0 }}%" 
                              aria-valuenow="{{ $stats['attendance_percentage'] ?? 0 }}" 
                              aria-valuemin="0" 
                              aria-valuemax="100">
                         </div>
+                    </div>
+                    <div class="text-end mt-2">
+                        <a href="{{ route('user.attendance.index') }}" class="btn btn-sm btn-link text-decoration-none p-0">
+                            View Full Attendance <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
                     </div>
                 </div>
             </div>

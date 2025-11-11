@@ -1,4 +1,5 @@
 @php
+    use Illuminate\Support\Facades\Storage;
     $cardClasses = ['card', 'notice-card', 'border-0', 'shadow-sm', 'mb-4'];
     
     if ($notice->is_pinned) {
@@ -37,9 +38,15 @@
                 </a>
             </h6>
             <div class="d-flex gap-2">
-                <span class="badge badge-type" style="background-color: {{ $notice->type_color }}">
-                    {{ ucfirst($notice->type) }}
-                </span>
+                @if($notice->noticeCategory)
+                    <span class="badge badge-type" style="background-color: #4e73df; color: white;">
+                        {{ $notice->noticeCategory->name }}
+                    </span>
+                @else
+                    <span class="badge badge-type" style="background-color: #6c757d; color: white;">
+                        No Category
+                    </span>
+                @endif
                 @if($hasFile)
                     <span class="badge bg-light text-dark">
                         <i class="{{ $fileIcon[0] }} me-1"></i> {{ $fileIcon[1] }}
@@ -65,12 +72,6 @@
             <p class="notice-content mb-3">
                 {{ Str::limit($notice->description, 150) }}
             </p>
-        @endif
-        
-        @if($hasImage)
-            <div class="mb-3" style="height: 200px; background: #f8f9fa; border-radius: 4px; overflow: hidden;">
-                <img src="{{ asset('storage/' . $notice->image_path) }}" alt="{{ $notice->title }}" class="img-fluid h-100 w-100" style="object-fit: cover;">
-            </div>
         @endif
         
         <div class="d-flex gap-2">

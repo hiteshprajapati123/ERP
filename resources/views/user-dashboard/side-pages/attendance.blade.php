@@ -591,25 +591,88 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse($userAttendances as $attendance)
+                                    @php
+                                        // Get all holiday notes (where user_id is null)
+                                        $holidayNotes = \App\Models\Attendance::whereNull('user_id')
+                                            ->whereNotNull('notes')
+                                            ->orderBy('date', 'desc')
+                                            ->take(10) // Limit to 10 most recent holidays
+                                            ->get()
+                                            ->keyBy(function($item) {
+                                                return $item->date->format('Y-m-d');
+                                            });
+                                        
+                                        // Merge user notes and holiday notes
+                                        $allNotes = [];
+                                        
+                                        // Add user notes
+                                        foreach ($userAttendances as $attendance) {
+                                            $dateKey = $attendance->date->format('Y-m-d');
+                                            $allNotes[$dateKey] = [
+                                                'date' => $dateKey,
+                                                'status' => $attendance->status,
+                                                'notes' => $attendance->notes,
+                                                'is_holiday' => false
+                                            ];
+                                            
+                                            // Add holiday note for this date if exists
+                                            if (isset($holidayNotes[$dateKey])) {
+                                                $allNotes[$dateKey . '-holiday'] = [
+                                                    'date' => $dateKey,
+                                                    'status' => 'holiday',
+                                                    'notes' => $holidayNotes[$dateKey]->notes,
+                                                    'is_holiday' => true
+                                                ];
+                                            }
+                                        }
+                                        
+                                        // Add any holiday notes that don't have user notes
+                                        foreach ($holidayNotes as $dateKey => $holiday) {
+                                            if (!isset($allNotes[$dateKey])) {
+                                                $allNotes[$dateKey] = [
+                                                    'date' => $dateKey,
+                                                    'status' => 'holiday',
+                                                    'notes' => $holiday->notes,
+                                                    'is_holiday' => true
+                                                ];
+                                            }
+                                        }
+                                        
+                                        // Sort by date descending
+                                        krsort($allNotes);
+                                        $allNotes = array_slice($allNotes, 0, 10); // Limit to 10 most recent
+                                    @endphp
+                                    
+                                    @forelse($allNotes as $note)
                                         <tr>
-                                            <td>{{ \Carbon\Carbon::parse($attendance->date)->format('M d, Y') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($note['date'])->format('M d, Y') }}</td>
                                             <td>
                                                 @php
+                                                    $status = $note['status'] ?? 'present';
                                                     $statusClass = [
-                                                        'present' => 'bg-success',
+                                                        'holiday' => 'bg-info',
                                                         'absent' => 'bg-danger',
-                                                    ][$attendance->status] ?? 'bg-secondary';
+                                                        'leave' => 'bg-warning',
+                                                        'present' => 'bg-success',
+                                                    ][$status] ?? 'bg-secondary';
                                                 @endphp
                                                 <span class="badge {{ $statusClass }}">
-                                                    {{ ucfirst($attendance->status) }}
+                                                    {{ ucfirst($status) }}
+                                                    @if($note['is_holiday'])
+                                                        <i class="mdi mdi-star ms-1"></i>
+                                                    @endif
                                                 </span>
                                             </td>
-                                            <td>{{ $attendance->notes }}</td>
+                                            <td class="notes-content">
+                                                {{ $note['notes'] }}
+                                                @if($note['is_holiday'])
+                                                    <span class="badge bg-light text-dark ms-2">Holiday</span>
+                                                @endif
+                                            </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="3" class="text-center py-4">No notes found</td>
+                                            <td colspan="3" class="text-center py-4">No attendance or holiday notes found.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
@@ -619,26 +682,92 @@
                     
                     <!-- Mobile View -->
                     <div class="d-md-none">
-                        @forelse($userAttendances as $attendance)
+                        @php
+                            // Get holiday notes for mobile view
+                            $mobileHolidayNotes = \App\Models\Attendance::whereNull('user_id')
+                                ->whereNotNull('notes')
+                                ->whereIn('date', $userAttendances->pluck('date')->map(function($date) {
+                                    return $date->format('Y-m-d');
+                                }))
+                                ->get()
+                                ->keyBy(function($item) {
+                                    return $item->date->format('Y-m-d');
+                                });
+                                
+                            // Create a combined collection for mobile view
+                            $mobileNotes = collect();
+                            
+                            // Add user notes
+                            foreach ($userAttendances as $attendance) {
+                                $dateKey = $attendance->date->format('Y-m-d');
+                                $mobileNotes->push((object)[
+                                    'date' => $dateKey,
+                                    'status' => $attendance->status,
+                                    'notes' => $attendance->notes,
+                                    'is_holiday' => false
+                                ]);
+                                
+                                // Add holiday note for this date if exists
+                                if (isset($mobileHolidayNotes[$dateKey])) {
+                                    $mobileNotes->push((object)[
+                                        'date' => $dateKey,
+                                        'status' => 'holiday',
+                                        'notes' => $mobileHolidayNotes[$dateKey]->notes,
+                                        'is_holiday' => true
+                                    ]);
+                                }
+                            }
+                            
+                            // Add any holiday notes that don't have user notes
+                            foreach ($mobileHolidayNotes as $dateKey => $holiday) {
+                                $hasUserNote = $userAttendances->contains(function($item) use ($dateKey) {
+                                    return $item->date->format('Y-m-d') === $dateKey;
+                                });
+                                
+                                if (!$hasUserNote) {
+                                    $mobileNotes->push((object)[
+                                        'date' => $dateKey,
+                                        'status' => 'holiday',
+                                        'notes' => $holiday->notes,
+                                        'is_holiday' => true
+                                    ]);
+                                }
+                            }
+                            
+                            // Sort by date descending and take 10 most recent
+                            $mobileNotes = $mobileNotes->sortByDesc('date')->take(10);
+                        @endphp
+                        
+                        @forelse($mobileNotes as $note)
                             @php
                                 $statusClass = [
                                     'present' => 'bg-success',
                                     'absent' => 'bg-danger',
-                                ][$attendance->status] ?? 'bg-secondary';
+                                    'holiday' => 'bg-info',
+                                    'leave' => 'bg-warning',
+                                ][$note->status] ?? 'bg-secondary';
                             @endphp
                             <div class="border-bottom p-3">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="text-muted small">{{ \Carbon\Carbon::parse($attendance->date)->format('M d, Y') }}</span>
-                                    <span class="badge {{ $statusClass }}">
-                                        {{ ucfirst($attendance->status) }}
-                                    </span>
+                                    <span class="text-muted small">{{ \Carbon\Carbon::parse($note->date)->format('M d, Y') }}</span>
+                                    <div>
+                                        @if($note->is_holiday)
+                                            <span class="badge bg-light text-dark me-1">Holiday</span>
+                                        @endif
+                                        <span class="badge {{ $statusClass }}">
+                                            {{ ucfirst($note->status) }}
+                                            @if($note->is_holiday)
+                                                <i class="mdi mdi-star ms-1"></i>
+                                            @endif
+                                        </span>
+                                    </div>
                                 </div>
                                 <div class="notes-content">
-                                    {{ $attendance->notes }}
+                                    {{ $note->notes }}
                                 </div>
                             </div>
                         @empty
-                            <div class="text-center py-4">No notes found</div>
+                            <div class="text-center py-4">No attendance or holiday notes found.</div>
                         @endforelse
                     </div>
                 </div>

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\UserNotice;
+use App\Models\NoticeCategory;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -22,11 +23,34 @@ class UserNoticeSeeder extends Seeder
             return;
         }
 
+        // Get notice categories
+        $generalCategory = NoticeCategory::where('slug', 'general')->first();
+        $examCategory = NoticeCategory::where('slug', 'exam')->first();
+        
+        // If categories don't exist, create them
+        if (!$generalCategory) {
+            $generalCategory = NoticeCategory::create([
+                'name' => 'General',
+                'slug' => 'general',
+                'description' => 'General notices and announcements',
+                'is_active' => true,
+            ]);
+        }
+        
+        if (!$examCategory) {
+            $examCategory = NoticeCategory::create([
+                'name' => 'Exam',
+                'slug' => 'exam',
+                'description' => 'Examination related notices',
+                'is_active' => true,
+            ]);
+        }
+
         $notices = [
             [
                 'title' => 'Welcome to Student Portal',
                 'description' => 'Important information about using the student portal',
-                'type' => 'general',
+                'notice_category_id' => $generalCategory->id,
                 'slug' => 'welcome-to-student-portal',
                 'content' => '<p>Welcome to our student portal! This is where you can find all your academic information, notices, and resources in one place.</p>',
                 'publish_date' => now(),
@@ -37,7 +61,7 @@ class UserNoticeSeeder extends Seeder
             [
                 'title' => 'Midterm Exam Schedule',
                 'description' => 'Schedule for the upcoming midterm examinations',
-                'type' => 'exam',
+                'notice_category_id' => $examCategory->id,
                 'slug' => 'midterm-exam-schedule',
                 'content' => '<p>Midterm examinations will be held from <strong>December 15 to December 20, 2024</strong>. Please check your exam schedule in the exam section.</p>',
                 'file_name' => 'midterm_schedule.pdf',

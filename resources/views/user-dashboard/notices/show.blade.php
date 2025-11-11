@@ -285,7 +285,7 @@
                                     </span>
                                     <span class="tag badge-type">
                                         <i class="fas fa-tag me-1"></i>
-                                        {{ ucfirst($notice->type) }}
+                                        {{ $notice->noticeCategory ? $notice->noticeCategory->name : 'No Category' }}
                                     </span>
                                     @if($notice->is_pinned)
                                         <span class="tag badge-pinned">
@@ -306,15 +306,6 @@
                             </a>
                         </div>
                     </div>
-
-                    <!-- Notice Image -->
-                    @if($notice->image_path)
-                        <div class="notice-image-container">
-                            <img src="{{ asset('storage/' . $notice->image_path) }}" 
-                                 alt="{{ $notice->title }}" 
-                                 class="notice-image">
-                        </div>
-                    @endif
 
                     <!-- Notice Content -->
                     <div class="notice-content">
@@ -347,20 +338,10 @@
                                         'rar' => ['icon' => 'file-archive', 'color' => '#6f42c1', 'preview' => false],
                                     ];
                                     
-                                    if (array_key_exists($fileExt, $fileTypes)) {
-                                        $fileType = $fileExt;
-                                        $icon = $fileTypes[$fileExt]['icon'];
-                                        $iconColor = $fileTypes[$fileExt]['color'];
-                                        $previewable = $fileTypes[$fileExt]['preview'];
-                                    }
                                     
-                                    $fileSize = $notice->file_size ?: Storage::size('public/' . $notice->file_path);
-                                    $fileSizeFormatted = $fileSize ? $this->formatFileSize($fileSize) : '';
+                                    $fileSize = $notice->file_size ?: Storage::size($notice->file_path);
+                                    $fileSizeFormatted = $fileSize ? \App\Helpers\FileHelper::formatFileSize($fileSize) : '';
                                 @endphp
-                                
-                                <div class="file-icon" style="background-color: {{ $iconColor }}20; color: {{ $iconColor }}">
-                                    <i class="fas fa-{{ $icon }} fa-2x"></i>
-                                </div>
                                 
                                 <div class="file-info">
                                     <div class="file-name">{{ $notice->file_name ?? basename($notice->file_path) }}</div>
@@ -379,7 +360,7 @@
                                            class="btn btn-preview me-2" 
                                            data-bs-toggle="modal" 
                                            data-bs-target="#filePreviewModal"
-                                           data-file-url="{{ asset('storage/' . $notice->file_path) }}"
+                                           data-file-url="@if(in_array($fileExt, ['jpg', 'jpeg', 'png', 'gif'])){{ route('user.notices.image', ['path' => $notice->file_path]) }}@else{{ route('user.notices.download', $notice->id) }}@endif"
                                            data-file-type="{{ $fileExt }}">
                                             <i class="fas fa-eye me-1"></i> Preview
                                         </a>
@@ -438,8 +419,8 @@
                                         <i class="far fa-calendar-alt me-1"></i>
                                         {{ $related->publish_date->format('M d, Y') }}
                                     </span>
-                                    <span class="badge" style="background-color: {{ $related->type_color }}">
-                                        {{ ucfirst($related->type) }}
+                                    <span class="badge" style="background-color: #4e73df; color: white;">
+                                        {{ $related->noticeCategory ? $related->noticeCategory->name : 'No Category' }}
                                     </span>
                                 </div>
                             </a>
@@ -503,27 +484,28 @@
                 </div>
             @endif
             
-            <!-- Notice Types -->
+            <!-- Notice Categories -->
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-white py-3">
                     <h5 class="mb-0">
                         <i class="fas fa-tags me-2 text-primary"></i>
-                        Notice Types
+                        Notice Categories
                     </h5>
                 </div>
                 <div class="card-body">
                     <div class="d-flex flex-wrap gap-2">
                         @php
-                            $noticeTypes = \App\Models\UserNotice::getNoticeTypes();
+                            $noticeCategories = \App\Models\NoticeCategory::where('is_active', true)->get();
                         @endphp
-                        @foreach($noticeTypes as $type => $details)
+                        @foreach($noticeCategories as $category)
                             @php
-                                $count = $details['count'] ?? 0;
-                                $name = $details['name'] ?? ucfirst($type);
+                                $count = \App\Models\UserNotice::published()
+                                    ->where('notice_category_id', $category->id)
+                                    ->count();
                             @endphp
-                            <a href="{{ route('user.notices.index', ['type' => $type]) }}" 
+                            <a href="{{ route('user.notices.index', ['category' => $category->id]) }}" 
                                class="btn btn-sm btn-outline-secondary position-relative">
-                                {{ $name }}
+                                {{ $category->name }}
                                 @if($count > 0)
                                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
                                         {{ $count }}
@@ -538,110 +520,6 @@
         </div>
     </div>
 </div>
-
-<!-- File Preview Modal -->
-<div class="modal fade" id="filePreviewModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">File Preview</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-0" id="filePreviewContainer">
-                <!-- Content will be loaded here by JavaScript -->
-            </div>
-            <div class="modal-footer">
-                <a href="#" id="downloadPreviewBtn" class="btn btn-primary">
-                    <i class="fas fa-download me-1"></i> Download
-                </a>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-@push('scripts')
-<script>
-    // File Preview Modal Handler
-    document.addEventListener('DOMContentLoaded', function() {
-        const previewModal = document.getElementById('filePreviewModal');
-        
-        if (previewModal) {
-            previewModal.addEventListener('show.bs.modal', function(event) {
-                const button = event.relatedTarget;
-                const fileUrl = button.getAttribute('data-file-url');
-                const fileType = button.getAttribute('data-file-type');
-                const container = document.getElementById('filePreviewContainer');
-                const downloadBtn = document.getElementById('downloadPreviewBtn');
-                
-                // Set download link
-                downloadBtn.href = fileUrl;
-                
-                // Clear previous content
-                container.innerHTML = '';
-                
-                // Load appropriate preview based on file type
-                if (fileType === 'pdf') {
-                    container.innerHTML = `
-                        <div style="height: 70vh;">
-                            <iframe src="${fileUrl}" 
-                                    style="width: 100%; height: 100%; border: none;">
-                            </iframe>
-                        </div>
-                    `;
-                } else if (['jpg', 'jpeg', 'png', 'gif'].includes(fileType)) {
-                    container.innerHTML = `
-                        <div class="text-center p-4">
-                            <img src="${fileUrl}" 
-                                 alt="Preview" 
-                                 class="img-fluid" 
-                                 style="max-height: 70vh; width: auto;">
-                        </div>
-                    `;
-                } else if (fileType === 'txt') {
-                    fetch(fileUrl)
-                        .then(response => response.text())
-                        .then(text => {
-                            container.innerHTML = `
-                                <div class="p-4" style="white-space: pre-wrap; font-family: monospace; max-height: 70vh; overflow-y: auto;">
-                                    ${text}
-                                </div>
-                            `;
-                        });
-                }
-            });
-            
-            // Clear modal content when closed
-            previewModal.addEventListener('hidden.bs.modal', function() {
-                document.getElementById('filePreviewContainer').innerHTML = '';
-            });
-        }
-        
-        // Tooltip initialization
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
-        
-        // Copy to clipboard feedback
-        const copyButtons = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-        copyButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const tooltip = bootstrap.Tooltip.getInstance(button);
-                const originalTitle = button.getAttribute('data-bs-original-title');
-                
-                button.setAttribute('data-bs-original-title', 'Copied!');
-                tooltip.show();
-                
-                setTimeout(() => {
-                    button.setAttribute('data-bs-original-title', originalTitle);
-                    tooltip.hide();
-                }, 2000);
-            });
-        });
-    });
-</script>
-@endpush
 
 @push('styles')
 <style>

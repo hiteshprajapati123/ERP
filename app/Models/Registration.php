@@ -28,13 +28,16 @@ class Registration extends Model
         'status',
     ];
 
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-    ];
-
+    /**
+     * Get the event that owns the registration.
+     */
     public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class);
     }
+
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
 }

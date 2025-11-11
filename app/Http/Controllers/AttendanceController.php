@@ -23,60 +23,8 @@ class AttendanceController extends Controller
         // Get attendance data for the selected month and year
         $attendanceData = $this->getMonthlyAttendance(Auth::id(), $month, $year);
         
-        // Calculate working days in the month
-        $startDate = Carbon::create($year, $month, 1);
-        $endDate = $startDate->copy()->endOfMonth();
-        $today = now()->startOfDay();
-        $todaysDate = $today->format('Y-m-d'); // Initialize $todaysDate
-        
-        // Count all days in the month as working days
-        $workingDays = $startDate->daysInMonth;
-        
-        // Filter only past or current days with attendance records
-        $attendanceUpToToday = $attendanceData->filter(function($day) use ($today) {
-            $date = Carbon::parse($day['date']);
-            return $date->lte($today);
-        });
-        
-        // Get all working days up to today (excluding weekends and holidays)
-        $startDate = Carbon::create($year, $month, 1);
-        $endDate = $startDate->copy()->endOfMonth();
-        $today = now()->startOfDay();
-        
-        $holidays = $attendanceUpToToday->where('status', 'holiday')->pluck('date');
-        $workingDaysCount = 0;
-        
-        for ($date = $startDate->copy(); $date->lte($today); $date->addDay()) {
-            if (!$date->isWeekend() && !$holidays->contains($date->format('Y-m-d'))) {
-                $workingDaysCount++;
-            }
-        }
-        
-        // Calculate statistics based on working days
-        $presentCount = $attendanceUpToToday->where('status', 'present')->count();
-        $absentCount = $attendanceUpToToday->where('status', 'absent')->count();
-        $holidayCount = $attendanceUpToToday->where('status', 'holiday')->count();
-        
-        // Calculate attendance percentage
-        $totalWorkingDays = $workingDaysCount > 0 ? $workingDaysCount : 1; // Prevent division by zero
-        $totalAbsentDays = $absentCount; // Only count absent days
-        
-        // Calculate percentage based on present days out of total working days
-        $attendancePercentage = $totalWorkingDays > 0 
-            ? max(0, min(100, round(($presentCount / $totalWorkingDays) * 100, 1)))
-            : 0;
-        
-        $stats = [
-            'present' => $presentCount, 
-            'absent' => $absentCount,   
-            'holidays' => $holidayCount,
-            'total_working_days' => $workingDays,
-            'working_days_so_far' => $workingDaysCount,
-            'attendance_percentage' => $attendancePercentage,
-        ];
-        
-        // Get recent attendance records
-        $recentRecords = $this->getRecentAttendance(Auth::id());
+        // Get attendance statistics using the new method
+        $attendanceStats = $this->calculateAttendanceStats(Auth::id(), $month, $year);
         
         // Prepare months and years for the dropdown
         $months = [
@@ -87,9 +35,12 @@ class AttendanceController extends Controller
         
         $years = range(now()->year - 2, now()->year + 1);
         
+        // Get recent attendance records
+        $recentRecords = $this->getRecentAttendance(Auth::id());
+        
         return view('user-dashboard.side-pages.attendance', [
             'attendanceData' => $attendanceData,
-            'stats' => $stats,
+            'stats' => $attendanceStats,
             'recentRecords' => $recentRecords,
             'currentMonth' => (int)$month,
             'currentYear' => (int)$year,
@@ -108,31 +59,81 @@ class AttendanceController extends Controller
     {
         $validated = $request->validate([
             'date' => 'required|date',
+            'user_id' => 'nullable|exists:users,id',
             'status' => 'nullable|in:present,absent,holiday',
             'notes' => 'nullable|string|max:1000',
-            'is_holiday' => 'sometimes|boolean'
+            'is_holiday' => 'sometimes|boolean',
+            'holiday_name' => 'nullable|string|max:255'
         ]);
 
+        $isHoliday = $request->filled('is_holiday') && $request->is_holiday;
         $attendanceData = [
-            'user_id' => auth()->id(),
             'date' => $validated['date'],
-            'notes' => $validated['notes'] ?? null
+            'notes' => $validated['notes'] ?? null,
+            'holiday_name' => $validated['holiday_name'] ?? null,
+            'is_holiday' => $isHoliday
         ];
 
         // Handle holiday status
-        if (isset($validated['is_holiday']) && $validated['is_holiday']) {
+        if ($isHoliday) {
             $attendanceData['status'] = 'holiday';
+            $attendanceData['notes'] = $attendanceData['notes'] ?? 'Public Holiday';
         } else {
             $attendanceData['status'] = $validated['status'] ?? null;
+            $attendanceData['user_id'] = $validated['user_id'] ?? auth()->id();
         }
 
-        // Check if this is an update or create
-        $existing = Attendance::where('user_id', $attendanceData['user_id'])
-            ->where('date', $attendanceData['date'])
-            ->first();
+        // If it's a holiday, handle for all users
+        if ($isHoliday) {
+            // Get all user IDs
+            $userIds = \App\Models\User::pluck('id');
+            $createdRecords = collect();
+            $today = now();
+
+            // First create the global holiday record (user_id = null)
+            $holidayRecord = Attendance::updateOrCreate(
+                [
+                    'user_id' => null,
+                    'date' => $attendanceData['date']
+                ],
+                [
+                    'status' => 'holiday',
+                    'notes' => $attendanceData['notes'],
+                    'holiday_name' => $attendanceData['holiday_name'],
+                    'is_holiday' => true,
+                    'created_by' => auth()->id()
+                ]
+            );
             
-        $isUpdate = $existing !== null;
-        
+            // Then create/update for each user
+            foreach ($userIds as $userId) {
+                $record = Attendance::updateOrCreate(
+                    [
+                        'user_id' => $userId,
+                        'date' => $attendanceData['date']
+                    ],
+                    [
+                        'status' => 'holiday',
+                        'notes' => $attendanceData['notes'],
+                        'holiday_name' => $attendanceData['holiday_name'],
+                        'is_holiday' => true,
+                        'created_by' => auth()->id()
+                    ]
+                );
+                $createdRecords->push($record);
+            }
+
+            // Log the activity for the holiday
+            $this->logAttendanceActivity($holidayRecord, true);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Holiday marked for all users',
+                'data' => $createdRecords
+            ]);
+        }
+
+        // Handle regular attendance for a single user
         $attendance = Attendance::updateOrCreate(
             [
                 'user_id' => $attendanceData['user_id'],
@@ -140,45 +141,94 @@ class AttendanceController extends Controller
             ],
             array_filter([
                 'status' => $attendanceData['status'],
-                'notes' => $attendanceData['notes']
+                'notes' => $attendanceData['notes'],
+                'is_holiday' => false,
+                'created_by' => auth()->id(),
+                'updated_at' => now()
             ])
         );
         
+        // Clear any cached attendance data for this user and month
+        $date = Carbon::parse($attendanceData['date']);
+        $cacheKey = "attendance_stats_{$attendanceData['user_id']}_{$date->month}_{$date->year}";
+        \Cache::forget($cacheKey);
+
         // Log the activity
-        $statusText = $attendanceData['status'] ?? 'not set';
-        $action = $isUpdate ? 'updated' : 'marked';
-        $formattedDate = Carbon::parse($attendanceData['date'])->format('M d, Y');
-        $description = "Attendance {$action} as {$statusText} for {$formattedDate}";
-        
-        // Ensure we have a valid model type
-        $modelType = 'App\\Models\\Attendance'; // Use the full namespace
-        
-        // Log the activity
-        UserActivity::create([
-            'user_id' => auth()->id(),
-            'activity_type' => $isUpdate ? UserActivity::TYPE_UPDATED : UserActivity::TYPE_CREATED,
-            'description' => $description,
-            'model_type' => $modelType, // Use the full namespace
-            'model_id' => $attendance->id,
-            'old_values' => $isUpdate ? $existing->toArray() : null,
-            'new_values' => $attendance->toArray(),
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent()
-        ]);
-        
-        // Debug log
-        \Log::info('Activity logged', [
-            'user_id' => auth()->id(),
-            'model_type' => $modelType,
-            'model_id' => $attendance->id,
-            'description' => $description
-        ]);
+        $this->logAttendanceActivity($attendance);
 
         return response()->json([
             'success' => true,
             'message' => 'Attendance recorded successfully',
             'data' => $attendance
         ]);
+    }
+    
+    /**
+     * Calculate attendance statistics for a user.
+     *
+     * @param int $userId
+     * @param int|null $month
+     * @param int|null $year
+     * @return array
+     */
+    public function calculateAttendanceStats($userId, $month = null, $year = null)
+    {
+        $currentDate = now();
+        $month = $month ?? $currentDate->month;
+        $year = $year ?? $currentDate->year;
+        $startOfMonth = Carbon::create($year, $month, 1)->startOfMonth();
+        $endOfMonth = $startOfMonth->copy()->endOfMonth();
+        
+        // Get all attendance records for the month
+        $attendanceRecords = Attendance::where('user_id', $userId)
+            ->whereMonth('date', $month)
+            ->whereYear('date', $year)
+            ->get();
+            
+        // Get holidays for the month
+        $holidays = Attendance::whereNull('user_id')
+            ->whereMonth('date', $month)
+            ->whereYear('date', $year)
+            ->get()
+            ->pluck('date');
+            
+        // Count present/absent days
+        $presentCount = $attendanceRecords->where('status', 'present')->count();
+        $absentCount = $attendanceRecords->where('status', 'absent')->count();
+        
+        // Count working days up to today (excluding weekends and holidays)
+        $workingDaysCount = 0;
+        $today = min($currentDate, $endOfMonth);
+        
+        for ($date = $startOfMonth->copy(); $date->lte($today); $date->addDay()) {
+            if (!$date->isWeekend() && !$holidays->contains($date->format('Y-m-d'))) {
+                $workingDaysCount++;
+            }
+        }
+        
+        // Count total working days in the month (excluding weekends and holidays)
+        $totalWorkingDays = 0;
+        for ($date = $startOfMonth->copy(); $date->lte($endOfMonth); $date->addDay()) {
+            if (!$date->isWeekend() && !$holidays->contains($date->format('Y-m-d'))) {
+                $totalWorkingDays++;
+            }
+        }
+        
+        // Calculate attendance percentage
+        $attendancePercentage = 100.0;
+        if ($workingDaysCount > 0) {
+            $attendancePercentage = max(0, 100 - (($absentCount / $workingDaysCount) * 100));
+            $attendancePercentage = round($attendancePercentage, 1);
+        }
+        
+        return [
+            'present' => $presentCount,
+            'absent' => $absentCount,
+            'holidays' => $holidays->count(),
+            'working_days_so_far' => $workingDaysCount,
+            'total_working_days' => $totalWorkingDays,
+            'attendance_percentage' => $attendancePercentage,
+        ];
     }
     
     /**
@@ -193,30 +243,52 @@ class AttendanceController extends Controller
     {
         $startDate = Carbon::create($year, $month, 1);
         $endDate = $startDate->copy()->endOfMonth();
+        $today = Carbon::today();
         
-        // Get existing attendance records for the month
-        $attendance = Attendance::where('user_id', $userId)
+        // Get user-specific attendance records
+        $userAttendance = Attendance::where('user_id', $userId)
             ->whereBetween('date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
-            ->orderBy('date')
-            ->get();
+            ->get()
+            ->keyBy(function($item) {
+                return Carbon::parse($item->date)->format('Y-m-d');
+            });
             
-        // Transform to the required format
-        $result = $attendance->map(function($record) {
-            $date = Carbon::parse($record->date);
-            $today = Carbon::today();
-            $isPastOrToday = $date->lte($today);
+        // Get global holiday records (where user_id is null)
+        $holidays = Attendance::whereNull('user_id')
+            ->whereBetween('date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+            ->get()
+            ->keyBy(function($item) {
+                return Carbon::parse($item->date)->format('Y-m-d');
+            });
             
-            return [
-                'date' => $record->date->format('Y-m-d'),
-                'day_name' => $date->shortEnglishDayOfWeek,
-                'day_number' => $date->day,
-                'status' => $record->status,
-                'is_weekend' => $date->isWeekend(),
-                'is_future' => $date->isFuture(),
-                'can_edit' => $isPastOrToday,
-                'notes' => $record->notes
-            ];
-        });
+        $result = collect();
+        $currentDate = $startDate->copy();
+        
+        // Loop through each day of the month
+        while ($currentDate->lte($endDate)) {
+            $dateStr = $currentDate->format('Y-m-d');
+            $isPastOrToday = $currentDate->lte($today);
+            
+            // Check for user-specific record first, then check for holiday
+            $record = $userAttendance[$dateStr] ?? null;
+            $holiday = $holidays[$dateStr] ?? null;
+            
+            $result->push([
+                'date' => $dateStr,
+                'day_name' => $currentDate->shortEnglishDayOfWeek,
+                'day_number' => $currentDate->day,
+                'status' => $record ? $record->status : ($holiday ? $holiday->status : null),
+                'is_weekend' => $currentDate->isWeekend(),
+                'is_future' => $currentDate->isFuture(),
+                'can_edit' => $isPastOrToday && !$holiday, // Can't edit holidays
+                'notes' => $record ? $record->notes : null,
+                'holiday_name' => $holiday ? $holiday->holiday_name : null,
+                'is_holiday' => (bool)$holiday, // Flag to identify holidays in the frontend
+                'holiday_notes' => $holiday ? $holiday->notes : null // Explicitly include holiday notes
+            ]);
+            
+            $currentDate->addDay();
+        }
         
         return $result;
     }
@@ -237,11 +309,43 @@ class AttendanceController extends Controller
                 return [
                     'id' => $record->id,
                     'date' => $record->date->format('Y-m-d'),
-                    'status' => $record->status
+                    'status' => $record->status,
+                    'notes' => $record->notes
                 ];
             });
     }
     
+    /**
+     * Log attendance activity
+     * 
+     * @param \App\Models\Attendance $attendance
+     * @param bool $isHoliday
+     * @return void
+     */
+    private function logAttendanceActivity($attendance, $isHoliday = false)
+    {
+        $statusText = $attendance->status ?? 'not set';
+        $action = $attendance->wasRecentlyCreated ? 'marked' : 'updated';
+        $formattedDate = $attendance->date->format('M d, Y');
+        $description = $isHoliday 
+            ? "Holiday {$action}: " . ($attendance->holiday_name ?? $attendance->notes) . " on {$formattedDate}"
+            : "Attendance {$action} as {$statusText} for {$formattedDate}";
+
+        UserActivity::create([
+            'user_id' => auth()->id(),
+            'activity_type' => $attendance->wasRecentlyCreated 
+                ? UserActivity::TYPE_CREATED 
+                : UserActivity::TYPE_UPDATED,
+            'description' => $description,
+            'model_type' => get_class($attendance),
+            'model_id' => $attendance->id,
+            'old_values' => $attendance->wasRecentlyCreated ? null : $attendance->getOriginal(),
+            'new_values' => $attendance->toArray(),
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent()
+        ]);
+    }
+
     /**
      * Get CSS class for status badge
      */
