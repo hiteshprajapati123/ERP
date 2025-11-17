@@ -19,7 +19,7 @@ use App\Http\Controllers\FeeController;
 |
 */
 
-Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
+Route::middleware(['auth', \App\Http\Middleware\MaintenanceMode::class])->prefix('user')->name('user.')->group(function () {
     // Dashboard
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 

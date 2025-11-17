@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
 
         // Seed hero slides
         $this->call([
+            MaintenanceSettingsSeeder::class,
             FooterContentSeeder::class,
             SocialLinkSeeder::class,
             PrivacyPolicySeeder::class,

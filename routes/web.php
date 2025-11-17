@@ -15,131 +15,132 @@ use App\Http\Controllers\ZakatController;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\Auth\LoginController;
 
-// Hero Slide Image Route (private)
-Route::get('/hero-slide/image/{filename}', [HomeController::class, 'heroSlideImage'])
-    ->name('hero-slide.image');
+// Frontend routes with maintenance mode
+Route::middleware(['web', \App\Http\Middleware\MaintenanceMode::class])->group(function () {
+    // Hero Slide Image Route (private)
+    Route::get('/hero-slide/image/{filename}', [HomeController::class, 'heroSlideImage'])
+        ->name('hero-slide.image');
 
-// About Section Image Route (private)
-Route::get('/about-section/image/{filename}', [HomeController::class, 'aboutSectionImage'])
-    ->name('about-section.image');
+    // About Section Image Route (private)
+    Route::get('/about-section/image/{filename}', [HomeController::class, 'aboutSectionImage'])
+        ->name('about-section.image');
 
-// Home Route
-Route::get('/', [HomeController::class, 'index'])->name('home');
+    // Home Route
+    Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// About Page Route
-Route::get('/about', [AboutController::class, 'index'])->name('about');
+    // About Page Route
+    Route::get('/about', [AboutController::class, 'index'])->name('about');
 
-// Serve private Zakat files
-Route::get('/zakat/files/{path}', [ZakatController::class, 'serveFile'])
-    ->where('path', '.*')
-    ->name('zakat.files');
-
-// Serve private Fitraa files
-Route::get('/fitraa/files/{path}', [FitraaController::class, 'serveFile'])
-    ->where('path', '.*')
-    ->name('fitraa.files');
-
-// Serve private Sadqa files
-Route::get('/sadqa/files/{path}', [SadqaController::class, 'serveFile'])
-    ->where('path', '.*')
-    ->name('sadqa.files');
-
-// Gallery API Routes
-Route::get('/gallery/items', [GalleryController::class, 'getGalleryItems']);
-
-// Events Routes
-Route::prefix('events')->group(function () {
-    Route::get('/', [EventController::class, 'index'])->name('events.index');
-    Route::get('/{event:slug}', [EventController::class, 'show'])->name('events.show');
-    // Serve private event images securely
-    Route::get('/image/{path}', [EventController::class, 'image'])
+    // Serve private Zakat files
+    Route::get('/zakat/files/{path}', [ZakatController::class, 'serveFile'])
         ->where('path', '.*')
-        ->name('events.image');
-    
-    // Event Registration Routes
-    Route::get('/{event:title}/register', [EventRegistrationController::class, 'create'])
-        ->name('event.registration.create');
-    Route::post('/{event:title}/register', [EventRegistrationController::class, 'store'])
-        ->name('events.register');
-    Route::get('/registration/success', [EventRegistrationController::class, 'success'])
-        ->name('registration.success');
+        ->name('zakat.files');
+
+    // Serve private Fitraa files
+    Route::get('/fitraa/files/{path}', [FitraaController::class, 'serveFile'])
+        ->where('path', '.*')
+        ->name('fitraa.files');
+
+    // Serve private Sadqa files
+    Route::get('/sadqa/files/{path}', [SadqaController::class, 'serveFile'])
+        ->where('path', '.*')
+        ->name('sadqa.files');
+
+    // Gallery API Routes
+    Route::get('/gallery/items', [GalleryController::class, 'getGalleryItems']);
+
+    // Events Routes
+    Route::prefix('events')->group(function () {
+        Route::get('/', [EventController::class, 'index'])->name('events.index');
+        Route::get('/{event:slug}', [EventController::class, 'show'])->name('events.show');
+        // Serve private event images securely
+        Route::get('/image/{path}', [EventController::class, 'image'])
+            ->where('path', '.*')
+            ->name('events.image');
+        
+        // Event Registration Routes
+        Route::get('/{event:title}/register', [EventRegistrationController::class, 'create'])
+            ->name('event.registration.create');
+        Route::post('/{event:title}/register', [EventRegistrationController::class, 'store'])
+            ->name('events.register');
+        Route::get('/registration/success', [EventRegistrationController::class, 'success'])
+            ->name('registration.success');
+    });
+
+    // Gallery Routes
+    Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery');
+
+    // Contact Form Route
+    Route::post('/contact', [\App\Http\Controllers\ContactController::class, '__invoke'])
+        ->name('contact.submit');
+
+    // Donation Routes
+    Route::prefix('donate')->name('donation.')->group(function () {
+        Route::get('fitraa', [FitraaController::class, 'index'])->name('fitraa');
+        Route::get('sadqa', [SadqaController::class, 'index'])->name('sadqa');
+        Route::get('zakat', [ZakatController::class, 'index'])->name('zakat');
+    });
+
+    // Public Notice Routes
+    Route::prefix('notices')->name('notices.')->group(function () {
+        Route::get('/', [NoticeController::class, 'index'])->name('index');
+        Route::get('{notice:slug}', [NoticeController::class, 'show'])->name('show');
+        Route::get('{notice}/download', [NoticeController::class, 'download'])->name('download');
+        Route::get('{notice}/image', [NoticeController::class, 'image'])->name('image');
+    });
+
+    // Public Question Papers
+    Route::get('/question-papers', [\App\Http\Controllers\QuestionPaperController::class, 'index'])
+        ->name('question-papers.index');
+    Route::get('/question-papers/{paper}/download', [\App\Http\Controllers\QuestionPaperController::class, 'download'])
+        ->name('question-papers.download');
+
+    // API Routes
+    Route::prefix('api')->name('api.')->group(function () {
+        Route::get('about-section', [AboutSectionController::class, 'getActiveSection']);
+        Route::get('gallery/featured', [GalleryController::class, 'welcomeGallery']);
+        Route::get('gallery/items', [GalleryController::class, 'getGalleryItems']);
+    });
+
+    // Redirect for backward compatibility
+    Route::get('/user-dashboard', function () {
+        return redirect()->route('user.dashboard');
+    })->name('user-dashboard');
+
+    // Contact Page Routes
+    Route::get('/contact', function () {
+        return view('pages.contact');
+    })->name('contact');
+
+    // Privacy Policy Page
+    Route::get('/privacy-policy', function () {
+        return view('pages.privacy');
+    })->name('privacy');
+
+    // Questions Paper Routes
+    Route::get('/question-papers', [\App\Http\Controllers\QuestionPaperController::class, 'index'])
+        ->name('question-papers.index');
+
+    // Notice Routes (Public)
+    Route::prefix('notices')->name('notices.')->group(function () {
+        Route::get('/', [NoticeController::class, 'index'])->name('index');
+        Route::get('{notice}', [NoticeController::class, 'show'])->name('show');
+        Route::get('{notice}/download', [NoticeController::class, 'download'])->name('download');
+        Route::get('{notice}/image', [NoticeController::class, 'image'])->name('image');
+    });
 });
 
-// Gallery Routes
-Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery');
+// Authentication Routes (without maintenance mode)
+Route::middleware('web')->group(function () {
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('user-login');
+    Route::post('/login', [LoginController::class, 'login'])->name('login');
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// Contact Form Route
-Route::post('/contact', [\App\Http\Controllers\ContactController::class, '__invoke'])
-    ->name('contact.submit');
-
-// Donation Routes
-Route::prefix('donate')->name('donation.')->group(function () {
-    Route::get('fitraa', [FitraaController::class, 'index'])->name('fitraa');
-    Route::get('sadqa', [SadqaController::class, 'index'])->name('sadqa');
-    Route::get('zakat', [ZakatController::class, 'index'])->name('zakat');
+    // Public routes accessible to all users
+    Route::middleware('guest')->group(function () {
+        Route::get('/user-login', [LoginController::class, 'showLoginForm'])->name('user.login');
+    });
 });
-
-// Public Notice Routes
-Route::prefix('notices')->name('notices.')->group(function () {
-    Route::get('/', [NoticeController::class, 'index'])->name('index');
-    Route::get('{notice:slug}', [NoticeController::class, 'show'])->name('show');
-    Route::get('{notice}/download', [NoticeController::class, 'download'])->name('download');
-    Route::get('{notice}/image', [NoticeController::class, 'image'])->name('image');
-});
-
-// Public Question Papers
-Route::get('/question-papers', [\App\Http\Controllers\QuestionPaperController::class, 'index'])
-    ->name('question-papers.index');
-Route::get('/question-papers/{paper}/download', [\App\Http\Controllers\QuestionPaperController::class, 'download'])
-    ->name('question-papers.download');
-
-// Authentication Routes
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('user-login');
-Route::post('/login', [LoginController::class, 'login'])->name('login');
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-
-// Public routes accessible to all users
-Route::middleware('guest')->group(function () {
-    Route::get('/user-login', [LoginController::class, 'showLoginForm'])->name('user.login');
-});
-
-// API Routes
-Route::prefix('api')->name('api.')->group(function () {
-    Route::get('about-section', [AboutSectionController::class, 'getActiveSection']);
-    Route::get('gallery/featured', [GalleryController::class, 'welcomeGallery']);
-    Route::get('gallery/items', [GalleryController::class, 'getGalleryItems']);
-});
-
-// Redirect for backward compatibility
-Route::get('/user-dashboard', function () {
-    return redirect()->route('user.dashboard');
-})->name('user-dashboard');
 
 // Include User Routes
 require __DIR__.'/user.php';
-
-// Contact Page Routes
-Route::get('/contact', function () {
-    return view('pages.contact');
-})->name('contact');
-
-// Privacy Policy Page
-Route::get('/privacy-policy', function () {
-    return view('pages.privacy');
-})->name('privacy');
-
-// Contact Form Submission
-Route::post('/contact', [\App\Http\Controllers\ContactController::class, '__invoke'])
-    ->name('contact.submit');
-
-// Questions Paper Routes
-Route::get('/question-papers', [\App\Http\Controllers\QuestionPaperController::class, 'index'])
-    ->name('question-papers.index');
-
-// Notice Routes (Public)
-Route::prefix('notices')->name('notices.')->group(function () {
-    Route::get('/', [NoticeController::class, 'index'])->name('index');
-    Route::get('{notice}', [NoticeController::class, 'show'])->name('show');
-    Route::get('{notice}/download', [NoticeController::class, 'download'])->name('download');
-    Route::get('{notice}/image', [NoticeController::class, 'image'])->name('image');
-});

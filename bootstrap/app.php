@@ -11,7 +11,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Maintenance middleware will be applied to specific routes only
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

@@ -15,6 +15,9 @@ class Dashboard extends BaseDashboard
     protected function getHeaderWidgets(): array
     {
         return [
+            // Maintenance Table Widget
+            \App\Filament\Widgets\MaintenanceTableWidget::class,
+            
             // Hero Slides
             \App\Filament\Widgets\HeroSlidesWidget::class,
             
