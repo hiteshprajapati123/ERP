@@ -156,7 +156,7 @@ Follow these steps to get your ERP system up and running:
 ### 1️⃣ Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/erp-system.git
+git clone https://github.com/hiteshprajapati123/ERP.git
 cd erp-system
 ```
 
@@ -466,82 +466,6 @@ If you discover a security vulnerability, please email security@erp.com. Do not 
 
 ---
 
-## 📚 API Documentation
-
-API documentation is available through:
-
-- **Swagger UI**: `/api/documentation`
-- **Postman Collection**: Available in `/docs` directory
-
-### Authentication
-
-API uses token-based authentication:
-
-```bash
-# Example API request
-curl -X GET "http://localhost:8000/api/users" \
-  -H "Authorization: Bearer YOUR_API_TOKEN" \
-  -H "Accept: application/json"
-```
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Please follow these steps:
-
-### Contribution Guidelines
-
-1. **Fork** the repository
-2. **Create** your feature branch
-   ```bash
-   git checkout -b feature/AmazingFeature
-   ```
-3. **Commit** your changes
-   ```bash
-   git commit -m 'Add some AmazingFeature'
-   ```
-4. **Push** to the branch
-   ```bash
-   git push origin feature/AmazingFeature
-   ```
-5. **Open** a Pull Request
-
-### Coding Standards
-
-- Follow PSR-12 coding standards
-- Write descriptive commit messages
-- Add tests for new features
-- Update documentation as needed
-- Ensure all tests pass before submitting PR
-
-### Pull Request Process
-
-1. Update the README.md with details of changes if applicable
-2. Update the CHANGELOG.md with your changes
-3. The PR will be merged once you have the sign-off of maintainers
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
-```
-MIT License
-
-Copyright (c) 2025 ERP System
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-```
 
 ## 🙏 Acknowledgments
 
@@ -553,10 +477,8 @@ copies or substantial portions of the Software.
 
 <div align="center">
 
-**Made with ❤️ by the ERP System Team**
+**Made with ❤️ by the Hitesh Prajapati Team**
 
 ⭐ Star us on GitHub — it motivates us a lot!
-
-[Report Bug](https://github.com/yourusername/erp-system/issues) • [Request Feature](https://github.com/yourusername/erp-system/issues)
 
 </div>
