@@ -7,29 +7,40 @@ use Illuminate\Database\Seeder;
 
 class PrivacyPolicySeeder extends Seeder
 {
-    public function run()
+   public function run()
     {
         // Only create if no privacy policy exists
         if (!PrivacyPolicy::exists()) {
             PrivacyPolicy::create([
                 'title' => 'Privacy Policy',
-                'subtitle' => 'Your privacy is important to us. Learn how we handle your information.',
-                'introduction' => 'At <b>Madarsa Nizamia Barqatia Mushtaqqul Uloom</b>, we respect your privacy and are committed to protecting the personal information of our students, teachers, and community members. This Privacy Policy explains how we handle your data.',
-                // New explicit columns
+                'subtitle' => 'Your trust matters to us. Learn how your information is protected.',
+                
+                'introduction' => 'At <b>ALJAMIATUS SUNNIYA MAQBOOLIYA ARBI COLLEGE</b>, we value the privacy of our students, parents, teachers, and community members. This Privacy Policy explains how we collect, use, and safeguard information through our ERP system and official platforms.',
+                
+                // Info We Collect
                 'info_we_collect' => implode("\n", [
-                    'Student details (name, ID, attendance, fees, books issued)',
-                    'Teacher details (name, subject, attendance records)',
-                    'Contact information (address, phone number, email)'
+                    'Student information (name, registration number, class, attendance, fee records)',
+                    'Teacher and staff information (name, designation, attendance, assigned subjects)',
+                    'Parent/guardian contact details (phone number, email, address)',
+                    'Academic records, examination results, and library data',
+                    'System usage data for security and performance monitoring'
                 ]),
+                
+                // How We Use Data
                 'how_we_use' => implode("\n", [
-                    'Maintain student records',
-                    'Track attendance and academic progress',
-                    'Manage fee records and library/books',
-                    'Communicate important notices and events'
+                    'To manage student admissions and academic records',
+                    'To track attendance, exams, and progress reports',
+                    'To manage fee payments and library services',
+                    'To communicate notices, circulars, and important updates',
+                    'To ensure secure and smooth operation of the ERP system'
                 ]),
-                'data_protection' => 'All information is securely stored and used only by authorized staff. We do not sell, share, or misuse your personal data.',
-                'your_rights' => 'You may request access, correction, or removal of your personal data by contacting our administration office.',
-                'updates_to_policy' => 'We may update this Privacy Policy from time to time to reflect changes in our practices. Any updates will be posted on this page.',
+                
+                'data_protection' => 'All personal data is stored securely and accessed only by authorized personnel. We do not sell, share, or disclose personal information to third parties except when required by law or with consent.',
+                
+                'your_rights' => 'You have the right to access, correct, or request deletion of your personal information by contacting the administration office of the college.',
+                
+                'updates_to_policy' => 'This Privacy Policy may be updated periodically to reflect improvements in our systems or changes in regulations. Any updates will be published on this page.',
+                
                 // Dates
                 'last_updated' => now()->format('F Y'),
                 'last_updated_date' => now()->toDateString(),

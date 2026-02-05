@@ -11,33 +11,37 @@ class SadqaSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run(): void
+   public function run(): void
     {
         Sadqa::create([
-            'hero_title' => 'Give Sadaqah',
-            'hero_quote' => '"The believer\'s shade on the Day of Resurrection will be their charity." (Al-Tirmidhi)',
+            'hero_title' => 'Give Sadaqah for the Sake of Allah',
+            'hero_quote' => '"Sadaqah extinguishes sin just as water extinguishes fire." (Tirmidhi)',
+            
             'what_is_title' => 'What is Sadaqah?',
-            'what_is_content' => 'Sadaqah is a voluntary act of charity given to please Allah and help those in need, without any expectation of return or reward from the recipient.',
+            'what_is_content' => 'Sadaqah is a voluntary charity given sincerely for the pleasure of Allah. It may be given at any time to support the poor, students of knowledge, and community needs, bringing benefit to both the giver and the receiver.',
+            
             'benefits' => json_encode([
                 [
-                    'title' => 'Blessings',
-                    'description' => 'Brings blessings and increases in wealth',
+                    'title' => 'Barakah in Wealth',
+                    'description' => 'Increases blessings and brings barakah in your earnings',
                     'icon' => 'heart'
                 ],
                 [
-                    'title' => 'Protection',
-                    'description' => 'Protects from calamities and difficulties',
+                    'title' => 'Protection from Hardship',
+                    'description' => 'Acts as a shield against difficulties and calamities',
                     'icon' => 'shield-alt'
                 ],
                 [
-                    'title' => 'Purification',
-                    'description' => 'Purifies the soul and wealth',
+                    'title' => 'Purification of Soul',
+                    'description' => 'Cleanses the heart and wealth through generosity',
                     'icon' => 'hand-holding-heart'
                 ]
             ]),
-            'donation_title' => 'Donate Sadaqah',
-            'donation_description' => 'Your Sadaqah can make a difference in someone\'s life today.',
-            'donation_note' => 'Your Sadaqah will be used to support those in need within our community.',
+            
+            'donation_title' => 'Support Through Sadaqah',
+            'donation_description' => 'Your Sadaqah helps students, needy families, and community programs of ALJAMIATUS SUNNIYA MAQBOOLIYA ARBI COLLEGE.',
+            'donation_note' => 'All Sadaqah donations are used transparently to support Islamic education, student welfare, and community assistance.',
+            
             'is_active' => true
         ]);
     }

@@ -13,31 +13,36 @@ class FitraaSeeder extends Seeder
     public function run(): void
     {
         \App\Models\Fitraa::create([
-            'hero_title' => 'Give Your Fitraa',
-            'hero_quote' => '"The charity of Fitra is a purification for the fasting person from idle and obscene talk, and it is food for the needy." (Sunan Abi Dawud)',
+            'hero_title' => 'Pay Your Fitraa (Zakat-ul-Fitr)',
+            'hero_quote' => '"The Messenger of Allah ﷺ made Zakat-ul-Fitr obligatory as purification for the fasting person and as food for the needy." (Sunan Abi Dawud)',
+            
             'what_is_title' => 'What is Fitraa?',
-            'what_is_content' => 'Fitraa (Zakat al-Fitr) is a charitable donation of food or its monetary equivalent that must be given to the poor before the Eid prayer at the end of Ramadan.',
+            'what_is_content' => 'Fitraa (Zakat-ul-Fitr) is a compulsory charity that every Muslim must give at the end of Ramadan before the Eid prayer. It purifies the fast from mistakes and helps the poor celebrate Eid with happiness and dignity.',
+            
             'benefits' => json_encode([
                 [
-                    'title' => 'Purification',
-                    'description' => 'Purifies the fasting person from any indecent act or speech',
+                    'title' => 'Purification of Fast',
+                    'description' => 'Cleanses the fasting person from shortcomings, idle talk, and mistakes during Ramadan',
                     'icon' => 'hands-helping'
                 ],
                 [
-                    'title' => 'Joy for All',
-                    'description' => 'Ensures everyone can celebrate Eid with dignity',
+                    'title' => 'Happiness on Eid',
+                    'description' => 'Allows needy families to celebrate Eid with respect and joy',
                     'icon' => 'gift'
                 ],
                 [
-                    'title' => 'Community Support',
-                    'description' => 'Helps those in need within our community',
+                    'title' => 'Support for the Needy',
+                    'description' => 'Provides essential food and help to deserving families in the community',
                     'icon' => 'hand-holding-heart'
                 ]
             ]),
-            'donation_title' => 'Donate Your Fitraa',
-            'donation_description' => 'Your contribution helps ensure everyone can celebrate Eid with joy and dignity.',
-            'donation_note' => 'Your donation will be used to provide essential food items to those in need before Eid.',
+            
+            'donation_title' => 'Contribute Your Fitraa',
+            'donation_description' => 'Your Fitraa helps us reach needy families before Eid and spreads joy where it is needed most.',
+            'donation_note' => 'All Fitraa donations collected through ALJAMIATUS SUNNIYA MAQBOOLIYA ARBI COLLEGE are distributed to deserving beneficiaries before Eid prayer.',
+            
             'is_active' => true
         ]);
     }
+
 }

@@ -18,28 +18,28 @@ class SocialLinkSeeder extends Seeder
                 'icon_class' => 'bi-facebook',
                 'url' => 'https://facebook.com',
                 'sort_order' => 1,
-                'is_active' => true
+                'is_active' => false
             ],
             [
                 'platform' => 'Twitter',
                 'icon_class' => 'bi-twitter',
                 'url' => 'https://twitter.com',
                 'sort_order' => 2,
-                'is_active' => true
+                'is_active' => false
             ],
             [
                 'platform' => 'Instagram',
                 'icon_class' => 'bi-instagram',
                 'url' => 'https://instagram.com',
                 'sort_order' => 3,
-                'is_active' => true
+                'is_active' => false
             ],
             [
                 'platform' => 'YouTube',
                 'icon_class' => 'bi-youtube',
                 'url' => 'https://youtube.com',
                 'sort_order' => 4,
-                'is_active' => true
+                'is_active' => false
             ]
         ];
 

@@ -12,6 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         // Maintenance middleware will be applied to specific routes only
+        $middleware->alias([
+            'teacher' => \App\Http\Middleware\EnsureUserIsTeacher::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

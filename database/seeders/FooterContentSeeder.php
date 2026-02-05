@@ -16,7 +16,7 @@ class FooterContentSeeder extends Seeder
         FooterContent::updateOrCreate(
             ['section' => 'about'],
             [
-                'content' => 'Our mission is to provide quality education and guidance. <br><br> 📖 "Acquire knowledge and impart it to the people." — Prophet Muhammad ﷺ',
+                'content' => 'ALJAMIATUS SUNNIYA MAQBOOLIYA ARBI COLLEGE is dedicated to spreading the light of Qur’an and Sunnah while nurturing students with knowledge, discipline, and strong character. <br><br> 📖 "Seeking knowledge is an obligation upon every Muslim." <br><br> — Prophet Muhammad ﷺ',
                 'is_active' => true
             ]
         );
@@ -25,11 +25,12 @@ class FooterContentSeeder extends Seeder
         FooterContent::updateOrCreate(
             ['section' => 'contact'],
             [
-                'address' => 'masjid, Pargahi Bangar, Kalyanpur, Naramau, Kanpur, Uttar Pradesh 209217',
-                'phone' => '+91 87390 90638',
-                'email' => 'info@madarsa.com',
+                'address' => 'ALJAMIATUS SUNNIYA MAQBOOLIYA ARBI COLLEGE, Pargahi Bangar, Kalyanpur, Naramau, Kanpur, Uttar Pradesh 209217',
+                'phone' => '+91 87390 XXXXX',
+                'email' => 'info@aljamia.edu.in',
                 'is_active' => true
             ]
         );
     }
+
 }

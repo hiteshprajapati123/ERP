@@ -144,3 +144,6 @@ Route::middleware('web')->group(function () {
 
 // Include User Routes
 require __DIR__.'/user.php';
+
+// Include Teacher Routes
+require __DIR__.'/teacher.php';

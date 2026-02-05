@@ -10,6 +10,7 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Illuminate\Support\HtmlString;
 use App\Filament\Navigation\CustomNavigation;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -24,8 +25,8 @@ class MadarsaAdminSidePanelProvider extends PanelProvider
     {
         return $panel
             ->default()
-            ->id('Madarsa-AdminSide')
-            ->path('Madarsa-AdminSide')
+            ->id('super-admin')
+            ->path('super-admin')
             ->login()
             ->authGuard('web')
             ->authMiddleware([
@@ -36,9 +37,9 @@ class MadarsaAdminSidePanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Green,
             ])
-            ->brandLogo(asset('img/logo.jpeg'))
+            ->brandLogo(new HtmlString('<img src="' . e(asset('img/logo.jpeg')) . '" alt="Logo" style="border-radius: 50%; height: 3rem; width: 3rem; object-fit: cover;">'))
             ->brandLogoHeight('3rem')
-            ->favicon(asset('img/favicon.ico'))
+            ->favicon(asset('img/logo.jpeg'))
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([

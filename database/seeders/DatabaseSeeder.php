@@ -30,22 +30,11 @@ class DatabaseSeeder extends Seeder
             SocialLinkSeeder::class,
             PrivacyPolicySeeder::class,
             ContactPageSeeder::class,
-            // HeroSlidesTableSeeder::class,
             AboutSectionSeeder::class,
             AboutSeeder::class,
-            // NoticeCategorySeeder::class,
-            // NoticeSeeder::class,
-            // FeeSeeder::class,
-            // EventSeeder::class,
             SadqaSeeder::class,
             ZakatSeeder::class,
             FitraaSeeder::class,
-            // GallerySeeder::class,
-            // GalleryCategorySeeder::class,
-            // PaperSeeder::class,
-            // AttendanceSeeder::class,
-            // ExamResultSeeder::class,
-            // UserNoticeSeeder::class,
         ]);
     }
 }

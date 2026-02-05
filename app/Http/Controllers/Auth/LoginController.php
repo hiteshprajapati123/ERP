@@ -46,7 +46,20 @@ class LoginController extends Controller
         // Attempt to log the user in
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-            return redirect()->intended(route('user-dashboard'));
+
+            // Role-based redirect
+            $user = Auth::user();
+
+            if ($user->isAdmin()) {
+                return redirect()->intended('/admin');
+            }
+
+            if ($user->isTeacher()) {
+                return redirect()->intended(route('teacher.dashboard'));
+            }
+
+            // Default to student dashboard
+            return redirect()->intended(route('user.dashboard'));
         }
 
         // If authentication fails, redirect back with error

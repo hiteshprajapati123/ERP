@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('state')->nullable();
             $table->string('pincode', 10)->nullable();
             $table->string('photo')->nullable();
-            $table->enum('role', ['admin', 'user_student'])->default('user_student');
+            $table->enum('role', ['admin', 'user_student', 'teacher'])->default('user_student');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
@@ -39,6 +39,16 @@ return new class extends Migration
             'email' => 'hitesh@example.com',
             'phone' => '1234567890',
             'role' => 'user_student',
+            'password' => bcrypt('Reset@123'),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+         DB::table('users')->insert([
+            'name' => 'teacher',
+            'email' => 'teacher@example.com',
+            'phone' => '123456789',
+            'role' => 'teacher',
             'password' => bcrypt('Reset@123'),
             'created_at' => now(),
             'updated_at' => now(),

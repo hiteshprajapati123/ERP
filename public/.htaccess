@@ -1,3 +1,14 @@
+# Increase PHP memory limit
+<IfModule mod_php7.c>
+    php_value memory_limit 512M
+    php_value max_execution_time 300
+</IfModule>
+
+<IfModule mod_php8.c>
+    php_value memory_limit 512M
+    php_value max_execution_time 300
+</IfModule>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes

@@ -69,7 +69,7 @@
                                                id="name" 
                                                name="name" 
                                                value="{{ old('name', auth()->user()->name) }}" 
-                                               required>
+                                               readonly style="cursor: not-allowed; background-color: var(--bg-secondary);" aria-readonly="true">
                                         @error('name')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -85,7 +85,7 @@
                                                id="email" 
                                                name="email" 
                                                value="{{ old('email', auth()->user()->email) }}" 
-                                               required>
+                                               readonly style="cursor: not-allowed; background-color: var(--bg-secondary);" aria-readonly="true">
                                         @error('email')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -101,7 +101,7 @@
                                                id="phone" 
                                                name="phone" 
                                                value="{{ old('phone', auth()->user()->phone) }}"
-                                               required>
+                                               readonly style="cursor: not-allowed; background-color: var(--bg-secondary);" aria-readonly="true">
                                         @error('phone')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -127,7 +127,8 @@
                                                class="form-control @error('date_of_birth') is-invalid @enderror" 
                                                id="date_of_birth" 
                                                name="date_of_birth" 
-                                               value="{{ old('date_of_birth', auth()->user()->date_of_birth ? \Carbon\Carbon::parse(auth()->user()->date_of_birth)->format('Y-m-d') : '') }}">
+                                               value="{{ old('date_of_birth', auth()->user()->date_of_birth ? \Carbon\Carbon::parse(auth()->user()->date_of_birth)->format('Y-m-d') : '') }}"
+                                               readonly style="cursor: not-allowed; background-color: var(--bg-secondary);" aria-readonly="true">
                                         @error('date_of_birth')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -141,8 +142,8 @@
                                         <select class="form-select @error('gender') is-invalid @enderror" 
                                                 id="gender" 
                                                name="gender" 
-                                               style="background-color: var(--card-bg); color: var(--text-primary);" 
-                                               required>
+                                               style="background-color: var(--bg-secondary); color: var(--text-primary); cursor: not-allowed;" 
+                                               required readonly aria-readonly="true">
                                             <option value="" disabled {{ old('gender', auth()->user()->gender) ? '' : 'selected' }}>Select Gender</option>
                                             <option value="male" {{ old('gender', auth()->user()->gender) == 'male' ? 'selected' : '' }}>Male</option>
                                             <option value="female" {{ old('gender', auth()->user()->gender) == 'female' ? 'selected' : '' }}>Female</option>
@@ -170,7 +171,7 @@
                                                id="father_name" 
                                                name="father_name" 
                                                value="{{ old('father_name', auth()->user()->father_name) }}" 
-                                               style="background-color: var(--card-bg); color: var(--text-primary);">
+                                               readonly style="cursor: not-allowed; background-color: var(--bg-secondary);" aria-readonly="true">
                                         @error('father_name')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -186,7 +187,7 @@
                                                id="mother_name" 
                                                name="mother_name" 
                                                value="{{ old('mother_name', auth()->user()->mother_name) }}" 
-                                               style="background-color: var(--card-bg); color: var(--text-primary);">
+                                               readonly style="cursor: not-allowed; background-color: var(--bg-secondary);" aria-readonly="true">
                                         @error('mother_name')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -208,7 +209,8 @@
                                                   id="address" 
                                                   name="address" 
                                                   rows="2" 
-                                                  style="background-color: var(--card-bg); color: var(--text-primary);">{{ old('address', auth()->user()->address) }}</textarea>
+                                                  style="background-color: var(--bg-secondary); color: var(--text-primary); cursor: not-allowed;" 
+                                                  readonly aria-readonly="true">{{ old('address', auth()->user()->address) }}</textarea>
                                         @error('address')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -223,7 +225,8 @@
                                                class="form-control @error('city') is-invalid @enderror" 
                                                id="city" 
                                                name="city" 
-                                               value="{{ old('city', auth()->user()->city) }}">
+                                               value="{{ old('city', auth()->user()->city) }}" 
+                                               readonly style="cursor: not-allowed; background-color: var(--bg-secondary);" aria-readonly="true">
                                         @error('city')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -238,7 +241,8 @@
                                                class="form-control @error('state') is-invalid @enderror" 
                                                id="state" 
                                                name="state" 
-                                               value="{{ old('state', auth()->user()->state) }}">
+                                               value="{{ old('state', auth()->user()->state) }}" 
+                                               readonly style="cursor: not-allowed; background-color: var(--bg-secondary);" aria-readonly="true">
                                         @error('state')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -253,7 +257,8 @@
                                                class="form-control @error('pincode') is-invalid @enderror" 
                                                id="pincode" 
                                                name="pincode" 
-                                               value="{{ old('pincode', auth()->user()->pincode) }}">
+                                               value="{{ old('pincode', auth()->user()->pincode) }}" 
+                                               readonly style="cursor: not-allowed; background-color: var(--bg-secondary);" aria-readonly="true">
                                         @error('pincode')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror

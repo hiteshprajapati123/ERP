@@ -24,9 +24,9 @@
             <div class="row align-items-center">
                 <div class="col-lg-6 mb-4 mb-lg-0">
                     @if($fitraa->what_is_image)
-                        <img src="{{ route('fitraa.files', $fitraa->what_is_image) }}" alt="What is Fitraa" class="img-fluid rounded-3 shadow">
+                        <img src="{{ route('fitraa.files', $fitraa->what_is_image) }}" alt="{{ $fitraa->what_is_title }}" class="img-fluid rounded-3 shadow">
                     @else
-                        <img src="{{ asset('images/default-what-is.jpg') }}" alt="What is Fitraa" class="img-fluid rounded-3 shadow">
+                        <img src="https://img.freepik.com/free-vector/charity-donation-concept-illustration_114360-1444.jpg" alt="{{ $fitraa->what_is_title }}" class="img-fluid rounded-3 shadow">
                     @endif
                 </div>
                 <div class="col-lg-6">

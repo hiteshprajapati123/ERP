@@ -15,11 +15,11 @@ class ContactPageSeeder extends Seeder
         // Check if contact page data already exists
         if (!\App\Models\ContactPage::exists()) {
             \App\Models\ContactPage::create([
-                'address' => '123 Islamic Center Road, Naramau, Uttar Pradesh, India',
-                'phone1' => '+91 98765 43210',
-                'phone2' => '+91 98765 43211',
-                'email1' => 'info@madrasanizamia.com',
-                'email2' => 'support@madrasanizamia.com',
+                'address' => 'ALJAMIATUS SUNNIYA MAQBOOLIYA ARBI COLLEGE, [Your City, State], India',
+                'phone1' => '+91-XXXXXXXXXX',
+                'phone2' => '+91-YYYYYYYYYY',
+                'email1' => 'info@aljamia.edu.in',
+                'email2' => 'support@aljamia.edu.in',
                 'is_active' => true,
             ]);
         }

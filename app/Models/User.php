@@ -138,6 +138,16 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if user is a teacher
+     *
+     * @return bool
+     */
+    public function isTeacher()
+    {
+        return $this->role === 'teacher';
+    }
+
+    /**
      * Get the user's role name (formatted)
      *
      * @return string
@@ -147,6 +157,7 @@ class User extends Authenticatable
         return match($this->role) {
             'admin' => 'Admin',
             'user_student' => 'Student',
+            'teacher' => 'Teacher',
             default => 'Unknown',
         };
     }
@@ -165,5 +176,13 @@ class User extends Authenticatable
     public function scopeStudents($query)
     {
         return $query->where('role', 'user_student');
+    }
+
+    /**
+     * Scope a query to only include teachers.
+     */
+    public function scopeTeachers($query)
+    {
+        return $query->where('role', 'teacher');
     }
 }

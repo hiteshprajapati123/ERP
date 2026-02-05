@@ -15,17 +15,11 @@ class Attendance extends Model
      *
      * @var array<int, string>
      */
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'user_id',
         'date',
         'status',
         'notes',
-        'holiday_status'
     ];
 
     /**
@@ -35,7 +29,6 @@ class Attendance extends Model
      */
     protected $casts = [
         'date' => 'date',
-        'holiday_status' => 'boolean'
     ];
 
     /**

@@ -15,34 +15,46 @@ class AboutSeeder extends Seeder
     {
         About::create([
             'page_title' => 'About Us',
-            'intro_content' => 'At Madarsa Nizamia Barqatia Mushtakqul Uloom, we are dedicated to providing Islamic Taleem alongside modern academic education. Our goal is to prepare students for both deen and duniya, ensuring they succeed in faith, knowledge, and life.',
-            'vision' => 'To nurture future leaders with strong Islamic values and modern knowledge.',
-            'mission' => 'To combine Islamic studies, academic subjects, and computer education for the holistic development of every student.',
-            'history_content' => 'Established to spread the light of both deen and worldly knowledge, our Madarsa has grown into a trusted center of learning. With dedicated teachers and a focus on excellence, we continue to serve the community with pride.',
+            'intro_content' => 'ALJAMIATUS SUNNIYA MAQBOOLIYA ARBI COLLEGE is a distinguished center of Islamic learning dedicated to preserving the teachings of the Qur’an and Sunnah while equipping students with essential modern knowledge. Our institution aims to develop knowledgeable, disciplined, and morally strong individuals who can serve the Ummah and society with wisdom and integrity.',
+            
+            'vision' => 'To become a leading Islamic educational institution that produces scholars and responsible citizens guided by Qur’an, Sunnah, and ethical values.',
+            
+            'mission' => 'To provide authentic Islamic education along with modern academic and technical skills, nurturing students spiritually, intellectually, and socially.',
+            
+            'history_content' => 'Founded with the noble intention of spreading Islamic knowledge, ALJAMIATUS SUNNIYA MAQBOOLIYA ARBI COLLEGE has been a beacon of learning for students seeking both religious and worldly success. Through the guidance of qualified Asatiza and the support of the community, the Madarsa continues to grow as a trusted institution of Islamic education.',
+            
             'what_we_offer' => json_encode([
-                'Islamic Studies (Qur\'an, Hadees, Fiqh, Tafseer)',
-                'Academic Subjects (Maths, Science, Languages, Social Studies)',
-                'Computer Courses (Digital Literacy, MS Office, Internet Skills)',
-                'Co-curricular Activities (Debates, Sports, Community Service)'
+                'Islamic Sciences (Qur’an, Tajweed, Hadees, Fiqh, Tafseer, Aqeedah)',
+                'Arabic Language & Literature (Nahw, Sarf, Balaghat)',
+                'Modern Education (Maths, Science, English, Social Studies)',
+                'Computer & Digital Skills (Basic Computing, Internet Awareness)',
+                'Character Building & Tarbiyah Programs'
             ]),
+            
             'highlights' => json_encode([
-                'Quality Education',
-                'Experienced Teachers',
-                'Community Programs',
-                'Computer & Technology Courses',
-                'Holistic Development'
+                'Strong Islamic Environment',
+                'Qualified & Experienced Asatiza',
+                'Focus on Tarbiyah and Akhlaq',
+                'Balanced Deen & Duniya Education',
+                'Student-Centered Learning Approach'
             ]),
+            
             'programs' => json_encode([
-                'Islamic Studies: Qur\'an, Hadees, Fiqh, Tafseer',
-                'Academic Subjects: Maths, Science, Languages',
-                'Computer Education: Digital literacy, MS Office, Internet Skills',
-                'Co-curricular: Debates, Sports, Social Service'
+                'Hifz & Nazira Qur’an Program',
+                'Aalimiyat & Fazilat Courses',
+                'Arabic Language Program',
+                'Modern Academic Subjects',
+                'Basic Computer Education',
+                'Moral & Character Development Activities'
             ]),
-            'principal_message' => 'Education is not only about books; it is about building character, faith, and responsibility. At our Madarsa, we strive to create students who excel in knowledge while staying rooted in Islamic values.',
-            'contact_address' => 'Madarsa Nizamia Barqatia Mushtakqul Uloom, [Your City, UP]',
-            'contact_phone' => '+91-87390 90638',
-            'contact_email' => 'info@madarsa.com',
+            
+            'principal_message' => 'Our aim is to nurture students who carry the light of knowledge, the strength of faith, and the beauty of good character. At ALJAMIATUS SUNNIYA MAQBOOLIYA ARBI COLLEGE, we believe true success lies in living by Islamic values while contributing positively to the world.',
+            
+            'contact_address' => 'ALJAMIATUS SUNNIYA MAQBOOLIYA ARBI COLLEGE, [Your City, State]',
+            'contact_phone' => '+91-XXXXXXXXXX',
+            'contact_email' => 'info@aljamia.edu.in',
             'is_active' => true,
         ]);
     }
+
 }

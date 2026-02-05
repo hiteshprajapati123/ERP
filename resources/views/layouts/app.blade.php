@@ -3,8 +3,14 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Madarsa Nizamia Barkatia')</title>
-    <link rel="shortcut icon" href="{{ asset('img/logo.jpeg') }}" type="image/jpeg">
+    @php
+        $siteSettings = \App\Models\SiteSetting::current();
+        $schoolNamePrimary = $siteSettings?->school_name_primary ?? 'ALJAMIATUS SUNNIYA';
+        $schoolNameSecondary = $siteSettings?->school_name_secondary ?? 'MAQBOOLIYA ARBI COLLEGE';
+        $logoPath = $siteSettings?->logo_path ? asset('storage/' . $siteSettings->logo_path) : asset('img/logo.jpeg');
+    @endphp
+    <title>@yield('title', $schoolNamePrimary . ' ' . $schoolNameSecondary)</title>
+    <link rel="shortcut icon" href="{{ $logoPath }}" type="image/jpeg">
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -458,11 +464,11 @@
                 <a class="navbar-brand" href="/">
                     <div class="d-flex align-items-center">
                         <div class="me-3" style="width: 50px; height: 50px; overflow: hidden; border-radius: 50%;">
-                            <img src="{{ asset('img/logo.jpeg') }}" alt="Madarsa Nizamia Barkatia Logo" style="width: 100%; height: 100%; object-fit: cover;">
+                            <img src="{{ $logoPath }}" alt="{{ $schoolNamePrimary }} logo" style="width: 100%; height: 100%; object-fit: cover;">
                         </div>
                         <div class="school-name">
-                            <div class="fw-bold mb-0">Madarsa Nizamia</div>
-                            <div class="small">Barkatia Mushtaqul Uloom</div>
+                            <div class="fw-bold mb-0" style="font-size: 1rem;">{{ $schoolNamePrimary }}</div>
+                            <div class="small">{{ $schoolNameSecondary }}</div>
                         </div>
                     </div>
                 </a>
@@ -529,11 +535,11 @@
                     <a class="navbar-brand me-auto" href="/">
                         <div class="d-flex align-items-center">
                             <div style="width: 40px; height: 40px; overflow: hidden; border-radius: 50%;">
-                                <img src="{{ asset('img/logo.jpeg') }}" alt="Logo" style="width: 100%; height: 100%; object-fit: cover;">
+                                <img src="{{ $logoPath }}" alt="{{ $schoolNamePrimary }} logo" style="width: 100%; height: 100%; object-fit: cover;">
                             </div>
                             <div class="ms-2 d-none d-sm-block">
-                                <div class="fw-bold" style="font-size: 1rem; line-height: 1.1;">Madarsa Nizamia</div>
-                                <div class="small" style="font-size: 0.7rem;">Barkatia</div>
+                                <div class="fw-bold" style="font-size: 1rem; line-height: 1.1;">{{ $schoolNamePrimary }}</div>
+                                <div class="small" style="font-size: 0.7rem;">{{ $schoolNameSecondary }}</div>
                             </div>
                         </div>
                     </a>

@@ -55,14 +55,16 @@ class UserForm
                     
                 // Personal Information
                 TextInput::make('roll_number')
-                    ->hint('Roll Number Always be unique not same as another user')
+                    ->hint('Ex :- Student = S001 , Teacher = T001')
                     ->required()
-                    ->maxLength(50),
+                    ->maxLength(50)
+                    ->unique(ignoreRecord: true),
                     
                 Select::make('role')
                     ->options([
                         'admin' => 'Admin',
                         'user_student' => 'Student',
+                        'teacher' => 'Teacher',
                     ])
                     ->columnSpanFull()
                     ->default('user_student')

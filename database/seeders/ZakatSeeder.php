@@ -11,36 +11,41 @@ class ZakatSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run(): void
+   public function run(): void
     {
         Zakat::create([
-            'hero_title' => 'Pay Your Zakat',
-            'hero_quote' => '"And establish prayer and give Zakat, and whatever good you put forward for yourselves - you will find it with Allah." (Quran 2:110)',
+            'hero_title' => 'Fulfill Your Zakat Obligation',
+            'hero_quote' => '"Take from their wealth a charity by which you purify them and cause them increase." (Qur’an 9:103)',
+            
             'what_is_title' => 'What is Zakat?',
-            'what_is_content' => 'Zakat is one of the Five Pillars of Islam, an obligatory act of charity that purifies wealth and helps those in need.',
+            'what_is_content' => 'Zakat is a mandatory act of worship and one of the five pillars of Islam. It purifies wealth, supports the poor, and strengthens the bonds of the Ummah. Every eligible Muslim must give Zakat once every lunar year.',
+            
             'key_points' => json_encode([
                 [
-                    'title' => 'Obligation',
-                    'description' => '2.5% of your eligible wealth',
+                    'title' => 'Obligatory Charity',
+                    'description' => '2.5% of eligible wealth must be given as Zakat',
                     'icon' => 'scale-balanced'
                 ],
                 [
-                    'title' => 'Nisab Value',
-                    'description' => 'Current Nisab: 87.48g of gold or 612.36g of silver',
+                    'title' => 'Nisab Threshold',
+                    'description' => 'Nisab is equal to 87.48g of gold or 612.36g of silver',
                     'icon' => 'calculator'
                 ],
                 [
-                    'title' => 'Annual Payment',
-                    'description' => 'Payable once every lunar year',
+                    'title' => 'Annual Duty',
+                    'description' => 'Zakat is paid once every lunar (Islamic) year',
                     'icon' => 'calendar-alt'
                 ]
             ]),
+            
             'donation_title' => 'Pay Your Zakat',
-            'donation_description' => 'Calculate and pay your Zakat to fulfill this important pillar of Islam.',
-            'donation_note' => 'Your Zakat will be distributed to those who are eligible to receive it according to Islamic guidelines.',
+            'donation_description' => 'Give your Zakat through ALJAMIATUS SUNNIYA MAQBOOLIYA ARBI COLLEGE to support students of knowledge and needy families.',
+            'donation_note' => 'All Zakat donations are distributed strictly according to Islamic Shariah guidelines to eligible recipients.',
+            
             'nisab_gold' => 87.48,
             'nisab_silver' => 612.36,
             'is_active' => true
         ]);
     }
+
 }

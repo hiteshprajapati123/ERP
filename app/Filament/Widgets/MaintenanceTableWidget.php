@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Resources\MaintenanceSettings\MaintenanceSettingsResource;
 use App\Models\MaintenanceSettings;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -57,7 +58,7 @@ class MaintenanceTableWidget extends BaseWidget
             ])
             ->actions([
                 EditAction::make()
-                    ->url(fn ($record) => route('filament.Madarsa-AdminSide.resources.maintenance-settings.edit', $record))
+                    ->url(fn ($record) => MaintenanceSettingsResource::getUrl('edit', ['record' => $record]))
                     ->label('Edit'),
                     
                 Action::make('quick_toggle')
